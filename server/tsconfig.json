@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    /* Basic Options */
     "target": "ES2022",
     "module": "ESNext",
     "lib": ["ES2022"],
@@ -9,16 +8,10 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-
-    /* Node.js Specific Options */
     "allowJs": true,
     "checkJs": false,
     "resolveJsonModule": true,
-
-    /* Type Definitions */
     "typeRoots": ["./node_modules/@types"],
-
-    /* Source Map Options */
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true
