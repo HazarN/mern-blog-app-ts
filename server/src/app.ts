@@ -1,12 +1,17 @@
 import express from 'express';
 import morgan from 'morgan';
 
+import usersRouter from './routes/users/users.router';
+
 const app = express();
+const API_BODY = 'api/v1';
 
 app.use(express.json());
 
 // server logging with an external package
 app.use(morgan('short'));
+
+app.use(`/${API_BODY}/users`, usersRouter);
 
 app.get('/', (_, res) => {
   res.json({

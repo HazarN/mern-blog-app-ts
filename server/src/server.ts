@@ -12,7 +12,7 @@ const server = createServer(app);
 
 const PORT = process.env.PORT || 8081;
 
-(async function startUp() {
+(async function initServer() {
   await mongoUtils.connectToMongo();
 
   server.listen(PORT, () =>
@@ -21,3 +21,13 @@ const PORT = process.env.PORT || 8081;
     )
   );
 })();
+
+//TODO: Implement the DELETE /users/id route
+
+//TODO: Implement the password hashing
+
+//TODO: Implement the JWT authentication
+
+//TODO: Implement the JWT authorization
+
+//TODO: Start to implement the /posts endpoints
