@@ -5,13 +5,13 @@ const app = express();
 
 app.use(express.json());
 
-// request logging
+// server logging with an external package
 app.use(morgan('short'));
 
 app.get('/', (_, res) => {
   res.json({
     message: 'Hello, world!',
-    status: 'The MERN Blog Application API is running!',
+    status: 'The MERN Blog API is running!',
   });
 });
 
