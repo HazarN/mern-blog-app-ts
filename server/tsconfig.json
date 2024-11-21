@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
     "target": "ES2022",
     "module": "ESNext",
     "lib": ["ES2022"],
@@ -11,7 +12,7 @@
     "allowJs": true,
     "checkJs": false,
     "resolveJsonModule": true,
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": ["./node_modules/@types", "./types/*"],
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true

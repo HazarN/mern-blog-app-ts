@@ -69,10 +69,10 @@ async function httpAddUser(
 
 // PUT /users/id
 async function httpUpdateUser(
-  req: Request<{ id: number }, {}, IUser>,
+  req: Request<{ id: string }, {}, IUser>,
   res: Response
 ): Promise<void> {
-  const { id } = req.params;
+  const id = Number(req.params.id);
 
   try {
     const userBody: IUser = req.body;
@@ -95,10 +95,10 @@ async function httpUpdateUser(
 }
 
 async function httpDeleteUser(
-  req: Request<{ id: number }>,
+  req: Request<{ id: string }>,
   res: Response
 ): Promise<void> {
-  const { id } = req.params;
+  const id = Number(req.params.id);
 
   try {
     const deletedUser: IUser | null = await usersModel.deleteUser(Number(id));

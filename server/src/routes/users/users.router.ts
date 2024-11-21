@@ -1,16 +1,17 @@
 import express, { Router } from 'express';
 
 import usersController from './users.controller';
+import isAuthenticated from '../../auth/auth.middleware';
 
-const router: Router = express.Router();
+const usersRouter: Router = express.Router();
 
-router.get('/', usersController.httpGetUsers);
-router.get('/:id', usersController.httpGetUserById);
+usersRouter.get('/', isAuthenticated, usersController.httpGetUsers);
+usersRouter.get('/:id', isAuthenticated, usersController.httpGetUserById);
 
-router.post('/', usersController.httpAddUser);
+usersRouter.post('/', isAuthenticated, usersController.httpAddUser);
 
-router.put('/:id', usersController.httpUpdateUser);
+usersRouter.put('/:id', isAuthenticated, usersController.httpUpdateUser);
 
-router.delete('/:id', usersController.httpDeleteUser);
+usersRouter.delete('/:id', isAuthenticated, usersController.httpDeleteUser);
 
-export default router;
+export default usersRouter;
