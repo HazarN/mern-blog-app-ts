@@ -22,10 +22,6 @@ const PORT = process.env.PORT || 8081;
   );
 })();
 
-//TODO: Implement the DELETE /users/id route
-
-//TODO: Implement the password hashing
-
 //TODO: Implement the JWT authentication
 
 //TODO: Implement the JWT authorization

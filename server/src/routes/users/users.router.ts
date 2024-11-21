@@ -11,4 +11,6 @@ router.post('/', usersController.httpAddUser);
 
 router.put('/:id', usersController.httpUpdateUser);
 
+router.delete('/:id', usersController.httpDeleteUser);
+
 export default router;

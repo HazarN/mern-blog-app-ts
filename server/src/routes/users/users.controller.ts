@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import IUser from '../../models/users/IUser';
 import usersModel from '../../models/users/users.model';
-import Exceptions from '../../utils/exceptions';
+import Exceptions from '../../utils/Exceptions';
 
 // GET /users
 async function httpGetUsers(_: Request, res: Response): Promise<void> {
@@ -94,9 +94,35 @@ async function httpUpdateUser(
   }
 }
 
+async function httpDeleteUser(
+  req: Request<{ id: number }>,
+  res: Response
+): Promise<void> {
+  const { id } = req.params;
+
+  try {
+    const deletedUser: IUser | null = await usersModel.deleteUser(Number(id));
+
+    if (!deletedUser)
+      return Exceptions.notFound(
+        res,
+        'Cannot delete user, it already does not exist'
+      );
+
+    res.status(200).json(deletedUser);
+  } catch (err) {
+    return Exceptions.internal(
+      res,
+      'Check the terminal for more information',
+      err
+    );
+  }
+}
+
 export default {
   httpGetUsers,
   httpGetUserById,
   httpAddUser,
   httpUpdateUser,
+  httpDeleteUser,
 };

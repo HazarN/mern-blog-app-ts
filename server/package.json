@@ -6,6 +6,7 @@
   "scripts": {
     "start": "tsx src/server.ts",
     "dev": "tsx --watch src/server.ts",
+    "hash-old-passwords": "tsx src/utils/hash.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,6 +14,7 @@
   "license": "ISC",
   "description": "The back-end API of the MERN Blog App",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
     "@types/morgan": "^1.9.9",
     "nodemon": "^3.1.7",
@@ -20,6 +22,7 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "mongoose": "^8.8.2",

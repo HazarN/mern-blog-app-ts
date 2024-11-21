@@ -1,5 +1,6 @@
 import users from './users.schema';
 import IUser from './IUser';
+import { DeleteResult } from 'mongoose';
 
 const DEFAULT_ID = 1000;
 
@@ -11,8 +12,8 @@ async function getLatestId(): Promise<number | null> {
 }
 
 export default {
-  async getUsers(): Promise<IUser[]> {
-    return await users.find({}, { _id: 0, __v: 0 });
+  async getUsers(wantDashId: boolean = false): Promise<IUser[]> {
+    return await users.find({}, { _id: Number(wantDashId), __v: 0 });
   },
 
   async getUserById(id: number): Promise<IUser | null> {
@@ -35,5 +36,14 @@ export default {
 
   async updateUser(id: number, user: IUser): Promise<IUser | null> {
     return await users.findOneAndUpdate({ id }, { ...user, id }, { new: true });
+  },
+
+  async deleteUser(id: number): Promise<IUser | null> {
+    return await users.findOneAndDelete({ id });
+  },
+
+  // this command is a deadly operation, use it with caution
+  async deleteUsers(): Promise<DeleteResult> {
+    return await users.deleteMany();
   },
 };

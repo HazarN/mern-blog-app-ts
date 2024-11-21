@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 
 import usersRouter from './routes/users/users.router';
@@ -13,7 +13,7 @@ app.use(morgan('short'));
 
 app.use(`/${API_BODY}/users`, usersRouter);
 
-app.get('/', (_, res) => {
+app.get('/', (_: Request, res: Response) => {
   res.json({
     message: 'Hello, world!',
     status: 'The MERN Blog API is running!',
