@@ -27,6 +27,10 @@ const userSchema: Schema = new Schema({
     required: true,
     default: false,
   },
+  refreshToken: {
+    type: String,
+    default: null,
+  },
 });
 
 // Implement the password hashing before saving the user

@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import IUser from '../../models/users/IUser';
 import usersModel from '../../models/users/users.model';
 import Exceptions from '../../utils/Exceptions';
+import hashUtils from '../../utils/hash';
 
 // GET /users
 async function httpGetUsers(_: Request, res: Response): Promise<void> {
@@ -84,7 +85,10 @@ async function httpUpdateUser(
 
     if (!updatedUser) return Exceptions.notFound(res, 'User not found');
 
-    res.status(200).json(updatedUser);
+    res.status(200).json({
+      ...userBody,
+      password: await hashUtils.hashPassword(userBody.password),
+    });
   } catch (err) {
     return Exceptions.internal(
       res,

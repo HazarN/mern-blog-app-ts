@@ -17,12 +17,28 @@ export default {
     return await users.find({}, { _id: Number(wantDashId), __v: 0 });
   },
 
-  async getUserById(id: number): Promise<IUser | null> {
-    return await users.findOne({ id }, { _id: 0, __v: 0 });
+  async getUserById(
+    id: number,
+    wantDashId: boolean = false
+  ): Promise<IUser | null> {
+    return await users.findOne({ id }, { _id: Number(wantDashId), __v: 0 });
   },
 
-  async getUserByEmail(email: string): Promise<IUser | null> {
-    return await users.findOne({ email }, { _id: 0, __v: 0 });
+  async getUserByEmail(
+    email: string,
+    wantDashId: boolean = false
+  ): Promise<IUser | null> {
+    return await users.findOne({ email }, { _id: Number(wantDashId), __v: 0 });
+  },
+
+  async getUserByRefreshToken(
+    refreshToken: string,
+    wantDashId: boolean = false
+  ): Promise<IUser | null> {
+    return await users.findOne(
+      { refreshToken },
+      { _id: Number(wantDashId), __v: 0 }
+    );
   },
 
   async addUser(user: IUser): Promise<IUser | null> {

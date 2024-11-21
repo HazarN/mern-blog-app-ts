@@ -10,9 +10,10 @@ import IUser from '../models/users/IUser';
 dotenv.config();
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
-if (!JWT_ACCESS_SECRET) {
-  throw new Error(displayMessage('JWT_ACCESS_SECRET is not defined', '*'));
+if (!JWT_ACCESS_SECRET || !JWT_REFRESH_SECRET) {
+  throw new Error(displayMessage('One of the JWT secrets are not found', '*'));
 }
 
 function generateAccessToken(user: IUser) {
@@ -25,24 +26,44 @@ function generateAccessToken(user: IUser) {
   return accessToken;
 }
 
+function generateRefreshToken(user: IUser) {
+  const payload = { id: user.id, isAdmin: user.isAdmin };
+
+  const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET as string, {
+    expiresIn: '7d',
+  });
+
+  return refreshToken;
+}
+
 function verifyAccessToken(
   token: string,
   req: IRequest<{}, {}, IUser>,
   res: Response
 ): boolean {
-  let isVerified: boolean = false;
+  try {
+    const payload = jwt.verify(token, JWT_ACCESS_SECRET as string);
 
-  jwt.verify(token, JWT_ACCESS_SECRET as string, (err, user) => {
-    if (err) return isVerified;
+    req.user = payload as IUser;
 
-    req.user = user as IUser;
-    isVerified = true;
-  });
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
 
-  return isVerified;
+function verifyRefreshToken(token: string, req: IRequest, res: Response) {
+  try {
+    const payload = jwt.verify(token, JWT_REFRESH_SECRET as string);
+    return payload;
+  } catch (err) {
+    return null;
+  }
 }
 
 export default {
   generateAccessToken,
+  generateRefreshToken,
   verifyAccessToken,
+  verifyRefreshToken,
 };
