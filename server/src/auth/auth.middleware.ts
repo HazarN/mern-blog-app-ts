@@ -18,14 +18,3 @@ function isAuthenticated(req: Request, res: Response, next: NextFunction) {
 }
 
 export default isAuthenticated;
-
-// Basic Authorization rules:
-/*
-
-Every endpoint should be protected for the non-authenticated users except for the /login and /register endpoints.
-
-A user should be able to access their own data and manipulate it, but not the data of other users.
-
-An admin should be able to access all the data.
-
-*/
