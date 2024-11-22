@@ -40,38 +40,49 @@ class HTTPException extends Error {
   }
 }
 
-export default class Exceptions {
-  public static badRequest(res: Response, message: string): void {
+// Implementing the Singleton pattern to have a single instance of the Exceptions class
+class Exceptions {
+  private static instance: Exceptions;
+
+  private constructor() {}
+
+  public static getInstance(): Exceptions {
+    if (!Exceptions.instance) this.instance = new Exceptions();
+
+    return this.instance;
+  }
+
+  public badRequest(res: Response, message: string): void {
     const httpException = new HTTPException(HTTPStatus.BAD_REQUEST, message);
 
     httpException.send(res);
   }
 
-  public static unauthorized(res: Response, message: string): void {
+  public unauthorized(res: Response, message: string): void {
     const httpException = new HTTPException(HTTPStatus.UNAUTHORIZED, message);
 
     httpException.send(res);
   }
 
-  public static forbidden(res: Response, message: string): void {
+  public forbidden(res: Response, message: string): void {
     const httpException = new HTTPException(HTTPStatus.FORBIDDEN, message);
 
     httpException.send(res);
   }
 
-  public static notFound(res: Response, message: string): void {
+  public notFound(res: Response, message: string): void {
     const httpException = new HTTPException(HTTPStatus.NOT_FOUND, message);
 
     httpException.send(res);
   }
 
-  public static conflict(res: Response, message: string): void {
+  public conflict(res: Response, message: string): void {
     const httpException = new HTTPException(HTTPStatus.CONFLICT, message);
 
     httpException.send(res);
   }
 
-  public static internal(res: Response, message: string, err: unknown): void {
+  public internal(res: Response, message: string, err: unknown): void {
     const httpException = new HTTPException(
       HTTPStatus.INTERNAL_SERVER_ERROR,
       message
@@ -81,3 +92,5 @@ export default class Exceptions {
     console.error(err); // we need to log the actual error for the internal server errors
   }
 }
+
+export default Exceptions.getInstance();
