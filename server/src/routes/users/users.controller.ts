@@ -78,6 +78,16 @@ async function httpUpdateUser(
   try {
     const userBody: IUser = req.body;
 
+    if (userBody.password && !userBody.password.startsWith('$2b$')) {
+      userBody.password = await hashUtils.hashPassword(userBody.password);
+    }
+
+    const userBeforeUpdate: IUser | null = await usersModel.getUserById(id);
+
+    // isAdmin is not allowed to be updated
+    if (userBody.isAdmin !== userBeforeUpdate?.isAdmin)
+      return Exceptions.forbidden(res, 'You cannot change the isAdmin status');
+
     const updatedUser: IUser | null = await usersModel.updateUser(
       Number(id),
       userBody
@@ -85,10 +95,7 @@ async function httpUpdateUser(
 
     if (!updatedUser) return Exceptions.notFound(res, 'User not found');
 
-    res.status(200).json({
-      ...userBody,
-      password: await hashUtils.hashPassword(userBody.password),
-    });
+    res.status(200).json(userBody);
   } catch (err) {
     return Exceptions.internal(
       res,
