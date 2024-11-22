@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Schema, Document } from 'mongoose';
 
 export default interface IUser extends Document {
   id: number;
@@ -7,4 +7,6 @@ export default interface IUser extends Document {
   password: string;
   isAdmin: boolean;
   refreshToken: string | null;
+
+  posts: Schema.Types.ObjectId[]; // One-to-Many relationship
 }

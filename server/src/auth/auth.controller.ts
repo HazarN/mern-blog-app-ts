@@ -5,6 +5,7 @@ import Exceptions from '../utils/Exceptions';
 import hashUtils from '../utils/hash';
 import jwtUtils from '../utils/jwt';
 import usersModel from '../models/users/users.model';
+import IUserPayload from './IUserPayload';
 
 interface IUserCredentials {
   email: string;
@@ -107,11 +108,11 @@ async function httpRefreshToken(
     );
 
   try {
-    const payload = jwtUtils.verifyRefreshToken(
+    const payload: IUserPayload | null = jwtUtils.verifyRefreshToken(
       refreshToken,
       req,
       res
-    ) as JwtPayload;
+    );
 
     if (!payload) return Exceptions.forbidden(res, 'Invalid or expired token');
 

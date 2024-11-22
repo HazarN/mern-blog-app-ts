@@ -3,6 +3,7 @@ import { Response, NextFunction } from 'express';
 import { IRequest } from 'types/express';
 import Exceptions from '../utils/Exceptions';
 import jwtUtils from '../utils/jwt';
+import IUserPayload from './IUserPayload';
 
 // Check if the user is authenticated
 function isAuthenticated(req: IRequest, res: Response, next: NextFunction) {
@@ -20,9 +21,9 @@ function isAuthenticated(req: IRequest, res: Response, next: NextFunction) {
 
 // Only an admin can reach the restricted routes
 function restrict(req: IRequest, res: Response, next: NextFunction): void {
-  const user = req.user;
+  const userPayload: IUserPayload | undefined = req.userPayload;
 
-  if (!user || !user.isAdmin)
+  if (!userPayload || !userPayload.isAdmin)
     return Exceptions.unauthorized(res, 'You are not authenticated');
 
   next();
@@ -34,10 +35,10 @@ function allowSelfOrAdmin(
   res: Response,
   next: NextFunction
 ): void {
-  const user = req.user;
+  const userPayload: IUserPayload | undefined = req.userPayload;
   const userId = Number(req.params.id);
 
-  if (!user || (user.id !== userId && !user.isAdmin))
+  if (!userPayload || (userPayload.id !== userId && !userPayload.isAdmin))
     return Exceptions.unauthorized(res, 'You are not authenticated');
 
   next();

@@ -31,6 +31,14 @@ const userSchema: Schema = new Schema({
     type: String,
     default: null,
   },
+
+  // One-to-Many relationship
+  posts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Post',
+    },
+  ],
 });
 
 // Implement the password hashing before saving the user

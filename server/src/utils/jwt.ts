@@ -6,6 +6,7 @@ import { IRequest } from '../../types/express';
 
 import displayMessage from './display';
 import IUser from '../models/users/IUser';
+import IUserPayload from 'src/auth/IUserPayload';
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ if (!JWT_ACCESS_SECRET || !JWT_REFRESH_SECRET) {
 }
 
 function generateAccessToken(user: IUser) {
-  const payload = { id: user.id, isAdmin: user.isAdmin };
+  const payload: IUserPayload = { id: user.id, isAdmin: user.isAdmin };
 
   const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET as string, {
     expiresIn: '15m',
@@ -27,7 +28,7 @@ function generateAccessToken(user: IUser) {
 }
 
 function generateRefreshToken(user: IUser) {
-  const payload = { id: user.id, isAdmin: user.isAdmin };
+  const payload: IUserPayload = { id: user.id, isAdmin: user.isAdmin };
 
   const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET as string, {
     expiresIn: '7d',
@@ -38,13 +39,16 @@ function generateRefreshToken(user: IUser) {
 
 function verifyAccessToken(
   token: string,
-  req: IRequest<{}, {}, IUser>,
+  req: IRequest<{}, {}, IUserPayload>,
   res: Response
 ): boolean {
   try {
-    const payload = jwt.verify(token, JWT_ACCESS_SECRET as string);
+    const payload = jwt.verify(
+      token,
+      JWT_ACCESS_SECRET as string
+    ) as IUserPayload;
 
-    req.user = payload as IUser;
+    req.userPayload = payload;
 
     return true;
   } catch (err) {
@@ -54,7 +58,11 @@ function verifyAccessToken(
 
 function verifyRefreshToken(token: string, req: IRequest, res: Response) {
   try {
-    const payload = jwt.verify(token, JWT_REFRESH_SECRET as string);
+    const payload = jwt.verify(
+      token,
+      JWT_REFRESH_SECRET as string
+    ) as IUserPayload;
+
     return payload;
   } catch (err) {
     return null;
