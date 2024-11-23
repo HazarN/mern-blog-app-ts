@@ -4,6 +4,9 @@ import IUser from '../../models/users/IUser';
 import usersModel from '../../models/users/users.model';
 import Exceptions from '../../utils/Exceptions';
 import hashUtils from '../../utils/hash';
+import IPost from 'src/models/posts/IPost';
+import postsModel from 'src/models/posts/posts.model';
+import { Schema } from 'mongoose';
 
 // GET /users
 async function httpGetUsers(_: Request, res: Response): Promise<void> {
@@ -105,6 +108,7 @@ async function httpUpdateUser(
   }
 }
 
+// when deleting a user, all the posts of that user should be deleted as well
 async function httpDeleteUser(
   req: Request<{ id: string }>,
   res: Response
@@ -112,7 +116,11 @@ async function httpDeleteUser(
   const id = Number(req.params.id);
 
   try {
-    const deletedUser: IUser | null = await usersModel.deleteUser(Number(id));
+    const user: IUser | null = await usersModel.getUserById(id, true);
+    const userPosts = await postsModel.deletePostsByUserId(
+      user?._id as Schema.Types.ObjectId
+    );
+    const deletedUser: IUser | null = await usersModel.deleteUser(id);
 
     if (!deletedUser)
       return Exceptions.notFound(
@@ -120,7 +128,7 @@ async function httpDeleteUser(
         'Cannot delete user, it already does not exist'
       );
 
-    res.status(200).json(deletedUser);
+    res.status(200).json({ deletedUser, posts: userPosts });
   } catch (err) {
     return Exceptions.internal(
       res,

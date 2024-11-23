@@ -42,10 +42,8 @@ class HTTPException extends Error {
 
 // Implementing the Singleton pattern to have a single instance of the Exceptions class
 class Exceptions {
-  private static instance: Exceptions;
-
   private constructor() {}
-
+  private static instance: Exceptions;
   public static getInstance(): Exceptions {
     if (!Exceptions.instance) this.instance = new Exceptions();
 

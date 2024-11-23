@@ -11,6 +11,11 @@ const postsRouter: Router = express.Router();
 
 postsRouter.get('/', postsController.httpGetPosts);
 postsRouter.get('/:id', postsController.httpGetPostById);
+postsRouter.get(
+  '/user/:userId',
+  isAuthenticated,
+  postsController.httpGetUserPosts
+); // logged in user end-point
 
 postsRouter.post('/:userId', postsController.httpAddPostToAny); // admin end-point
 postsRouter.post(
@@ -19,8 +24,8 @@ postsRouter.post(
   postsController.httpAddPostToCurrentUser
 ); // logged in user end-point
 
-//postsRouter.put('/:id', postsController.httpUpdatePost);
+postsRouter.put('/:id', isAuthenticated, postsController.httpUpdateUserPost);
 
-//postsRouter.delete('/:id', postsController.httpDeletePost);
+postsRouter.delete('/:id', isAuthenticated, postsController.httpDeletePost);
 
 export default postsRouter;
