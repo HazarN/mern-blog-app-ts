@@ -1,9 +1,12 @@
 import { Box, Typography, Paper } from '@mui/material';
 
-import LoginForm from '../components/LoginForm';
+import { useLoginContext } from '../hooks/useLoginContext';
 
-import Navbar from '../components/Navbar';
 import Layout from './Layout';
+
+import LoginForm from '../components/LoginForm';
+import Navbar from '../components/Navbar';
+import Spinner from '../components/Spinner';
 
 const centeredBox: React.CSSProperties = {
   display: 'flex',
@@ -21,6 +24,8 @@ const paperStyle: React.CSSProperties = {
 };
 
 function Login(): JSX.Element {
+  const { loading } = useLoginContext();
+
   return (
     <Layout>
       <Navbar />
@@ -31,9 +36,13 @@ function Login(): JSX.Element {
             Sign In
           </Typography>
 
-          <Typography variant='body1' gutterBottom color='textSecondary'>
-            Enter your email and password to access your account.
-          </Typography>
+          {loading ? (
+            <Spinner />
+          ) : (
+            <Typography variant='body1' gutterBottom color='textSecondary'>
+              Enter your email and password to access your account.
+            </Typography>
+          )}
 
           <LoginForm />
         </Paper>

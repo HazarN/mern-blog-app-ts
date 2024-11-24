@@ -1,32 +1,33 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { CssBaseline, ThemeProvider } from '@mui/material';
+
+import { AuthProvider } from './contexts/AuthContext';
+import { LoginProvider } from './contexts/LoginContext';
 
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import Landing from './pages/Landing';
-import AppLayout from './pages/AppLayout';
 import NotFound from './pages/NotFound';
-import theme from './styles/theme';
-import Signup from './pages/SignUp';
+import AppLayout from './pages/AppLayout';
 
 function App(): JSX.Element {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <LoginProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route index element={<Landing />} />
 
-      <BrowserRouter>
-        <Routes>
-          <Route index element={<Landing />} />
+            <Route path='login' element={<Login />} />
 
-          <Route path='login' element={<Login />} />
+            <Route path='signup' element={<Signup />} />
 
-          <Route path='signup' element={<Signup />} />
+            <Route path='blog' element={<AppLayout />} />
 
-          <Route path='blog' element={<AppLayout />} />
-
-          <Route path='*' element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+            <Route path='*' element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </LoginProvider>
   );
 }
 

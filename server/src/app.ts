@@ -1,13 +1,20 @@
 import express, { Response } from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
 
 import authRouter from './auth/auth.router';
 import usersRouter from './routes/users/users.router';
 import postsRouter from './routes/posts/posts.router';
 
 const app = express();
-const API_BODY = 'api/v1';
 
+const API_BODY = 'api/v1';
+const corsPolicy = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+};
+
+app.use(cors(corsPolicy));
 app.use(express.json());
 
 // server logging with an external package
