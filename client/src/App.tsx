@@ -6,6 +6,7 @@ import Landing from './pages/Landing';
 import AppLayout from './pages/AppLayout';
 import NotFound from './pages/NotFound';
 import theme from './styles/theme';
+import Signup from './pages/SignUp';
 
 function App(): JSX.Element {
   return (
@@ -17,6 +18,8 @@ function App(): JSX.Element {
           <Route index element={<Landing />} />
 
           <Route path='login' element={<Login />} />
+
+          <Route path='signup' element={<Signup />} />
 
           <Route path='blog' element={<AppLayout />} />
 

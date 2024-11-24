@@ -1,8 +1,16 @@
+import { Typography } from '@mui/material';
+
+import Layout from './Layout';
+
+import Navbar from '../components/Navbar';
+
 function AppLayout(): JSX.Element {
   return (
-    <div>
-      <h1>App Layout</h1>
-    </div>
+    <Layout>
+      <Navbar />
+
+      <Typography variant='h4'>App Layout</Typography>
+    </Layout>
   );
 }
 

@@ -1,9 +1,9 @@
 import { Box, Typography, Paper } from '@mui/material';
 
-import LoginForm from '../components/LoginForm';
+import Layout from './Layout';
 
 import Navbar from '../components/Navbar';
-import Layout from './Layout';
+import SignupForm from '../components/SignupForm';
 
 const centeredBox: React.CSSProperties = {
   display: 'flex',
@@ -20,7 +20,7 @@ const paperStyle: React.CSSProperties = {
   textAlign: 'center',
 };
 
-function Login(): JSX.Element {
+function Signup(): JSX.Element {
   return (
     <Layout>
       <Navbar />
@@ -28,18 +28,18 @@ function Login(): JSX.Element {
       <Box sx={centeredBox}>
         <Paper elevation={3} sx={paperStyle}>
           <Typography variant='h4' gutterBottom>
-            Sign In
+            Sign Up
           </Typography>
 
           <Typography variant='body1' gutterBottom color='textSecondary'>
-            Enter your email and password to access your account.
+            Create an account to get started.
           </Typography>
 
-          <LoginForm />
+          <SignupForm />
         </Paper>
       </Box>
     </Layout>
   );
 }
 
-export default Login;
+export default Signup;
