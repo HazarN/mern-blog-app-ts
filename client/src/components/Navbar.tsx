@@ -1,17 +1,29 @@
-import { AppBar, Button, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Toolbar, Typography } from '@mui/material';
+import ForumIcon from '@mui/icons-material/Forum';
 
 const spaceBetween = {
   display: 'flex',
   justifyContent: 'space-between',
 };
+const wrap = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '1rem',
+};
 
-function Navbar(): JSX.Element {
+interface NavbarProps {
+  children: React.ReactNode;
+}
+function Navbar({ children }: NavbarProps): JSX.Element {
   return (
     <AppBar color='primary' position='static'>
       <Toolbar sx={spaceBetween}>
-        <Typography variant='h6'>Logo</Typography>
+        <Box sx={wrap}>
+          <ForumIcon fontSize='large' />
+          <Typography variant='h6'>MERN | Blog App</Typography>
+        </Box>
 
-        <Button color='inherit'>Login</Button>
+        <Box>{children}</Box>
       </Toolbar>
     </AppBar>
   );
