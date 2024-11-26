@@ -1,9 +1,9 @@
 import { useContext } from 'react';
 
-import { LoginContext } from '../contexts/LoginContext';
+import { FormContext } from '../contexts/FormContext';
 
-export function useLoginContext() {
-  const context = useContext(LoginContext);
+export function useFormContext() {
+  const context = useContext(FormContext);
 
   if (!context) {
     throw new Error('useLoginContext must be used within a LoginProvider');

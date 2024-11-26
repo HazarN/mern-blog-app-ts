@@ -49,6 +49,7 @@ async function httpLogin(
       res.status(200).json({
         message: 'Login successful',
         payload: {
+          id: user.id,
           name: user.name,
           isAdmin: user.isAdmin,
           accessToken,

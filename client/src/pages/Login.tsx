@@ -1,6 +1,6 @@
 import { Box, Typography, Paper } from '@mui/material';
 
-import { useLoginContext } from '../hooks/useLoginContext';
+import { useFormContext } from '../hooks/useFormContext';
 
 import Layout from './Layout';
 
@@ -24,7 +24,7 @@ const paperStyle: React.CSSProperties = {
 };
 
 function Login(): JSX.Element {
-  const { loading } = useLoginContext();
+  const { loading } = useFormContext();
 
   return (
     <Layout>

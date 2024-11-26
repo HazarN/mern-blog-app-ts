@@ -1,18 +1,26 @@
 import { useState, createContext } from 'react';
 import axios from 'axios';
 
-import { useLoginContext } from '../hooks/useLoginContext';
+import { useFormContext } from '../hooks/useFormContext';
 
 export interface User {
-  email: string;
-  password: string;
+  // email: string; email can be stored as well, but i don't need it for now. will use id
+  id: number;
+  isAdmin: boolean;
+
+  accessToken?: string;
+  refreshToken?: string;
 }
 
 interface AuthContextValue {
   user: User | null;
-  setUser: (user: User | null) => void;
+  isAuth: boolean;
+
+  setUser?: (user: User | null) => void;
+  setIsAuth?: (isAuth: boolean) => void;
 
   login: (email: string, password: string) => void;
+  //logout: () => void; FIXME: implement logout
 }
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -20,9 +28,10 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 function AuthProvider({ children }: AuthProviderProps) {
-  const { dispatch } = useLoginContext();
+  const { dispatch } = useFormContext();
 
   const [user, setUser] = useState<User | null>(null);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
 
   async function login(email: string, password: string) {
     dispatch({ type: 'SET_LOADING', payload: true });
@@ -38,10 +47,17 @@ function AuthProvider({ children }: AuthProviderProps) {
         switch (res.status) {
           case 200:
             setUser((user) => {
+              const resUser: User = res.data.payload;
+
+              setIsAuth(true);
+
               return {
                 ...user,
-                email,
-                password,
+                id: resUser.id,
+                isAdmin: resUser.isAdmin,
+                accessToken: resUser.accessToken,
+                refreshToken: resUser.refreshToken,
+                //email, mail can be stored as well, but i don't need it for now. will use id
               };
             });
 
@@ -66,7 +82,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login }}>
+    <AuthContext.Provider value={{ user, isAuth, login }}>
       {children}
     </AuthContext.Provider>
   );

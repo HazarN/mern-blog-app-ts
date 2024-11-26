@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, TextField, SxProps, Alert } from '@mui/material';
 
 import { useAuthContext } from '../hooks/useAuthContext';
-import { useLoginContext } from '../hooks/useLoginContext';
+import { useFormContext } from '../hooks/useFormContext';
 
 const inputBlueHover: SxProps = {
   '& .MuiOutlinedInput-root': {
@@ -24,8 +24,16 @@ function LoginForm(): JSX.Element {
   const navigate = useNavigate();
 
   const { login } = useAuthContext();
-  const { emailInput, passwordInput, message, severity, dispatch } =
-    useLoginContext();
+  const {
+    emailInput,
+    passwordInput,
+    message,
+    severity,
+    emailError,
+    passwordError,
+    dispatch,
+    loginFormValidation,
+  } = useFormContext();
 
   function handleSignUpClick() {
     navigate('/signup');
@@ -36,7 +44,10 @@ function LoginForm(): JSX.Element {
   ): Promise<void> {
     e.preventDefault();
 
-    await login(emailInput, passwordInput);
+    const isValid = loginFormValidation(emailInput, passwordInput);
+
+    if (!isValid) return;
+    else await login(emailInput, passwordInput);
   }
 
   return (
@@ -54,6 +65,8 @@ function LoginForm(): JSX.Element {
         margin='normal'
         variant='outlined'
         required
+        error={!!emailError}
+        helperText={emailError}
         sx={inputBlueHover}
         value={emailInput}
         onChange={(e) =>
@@ -68,6 +81,8 @@ function LoginForm(): JSX.Element {
         margin='normal'
         variant='outlined'
         required
+        error={!!passwordError}
+        helperText={passwordError}
         sx={inputBlueHover}
         value={passwordInput}
         onChange={(e) =>

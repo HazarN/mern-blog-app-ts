@@ -1,17 +1,18 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AuthProvider } from './contexts/AuthContext';
-import { LoginProvider } from './contexts/LoginContext';
+import { FormProvider } from './contexts/FormContext';
 
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Landing from './pages/Landing';
 import NotFound from './pages/NotFound';
 import AppLayout from './pages/AppLayout';
+import ProtectedRoute from './pages/_ProtectedRoute';
 
 function App(): JSX.Element {
   return (
-    <LoginProvider>
+    <FormProvider>
       <AuthProvider>
         <BrowserRouter>
           <Routes>
@@ -21,13 +22,20 @@ function App(): JSX.Element {
 
             <Route path='signup' element={<Signup />} />
 
-            <Route path='blog' element={<AppLayout />} />
+            <Route
+              path='blog'
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path='*' element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
-    </LoginProvider>
+    </FormProvider>
   );
 }
 
