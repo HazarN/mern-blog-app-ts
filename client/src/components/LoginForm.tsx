@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, TextField, SxProps, Alert } from '@mui/material';
 
@@ -47,8 +48,15 @@ function LoginForm(): JSX.Element {
     const isValid = loginFormValidation(emailInput, passwordInput);
 
     if (!isValid) return;
-    else await login(emailInput, passwordInput);
+
+    const status: number = await login(emailInput, passwordInput);
+
+    if (status === 200) setTimeout(() => navigate('/blog'), 1_250);
   }
+
+  useEffect(() => {
+    dispatch({ type: 'RESET' });
+  }, [dispatch]);
 
   return (
     <Box

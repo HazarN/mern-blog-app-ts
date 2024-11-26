@@ -1,10 +1,9 @@
-import { useState, createContext } from 'react';
 import axios from 'axios';
+import { useState, createContext } from 'react';
 
 import { useFormContext } from '../hooks/useFormContext';
 
 export interface User {
-  // email: string; email can be stored as well, but i don't need it for now. will use id
   id: number;
   isAdmin: boolean;
 
@@ -19,7 +18,13 @@ interface AuthContextValue {
   setUser?: (user: User | null) => void;
   setIsAuth?: (isAuth: boolean) => void;
 
-  login: (email: string, password: string) => void;
+  login: (email: string, password: string) => Promise<number>;
+  register: (
+    fullName: string,
+    email: string,
+    password: string
+  ) => Promise<number>;
+  refresh: () => void;
   //logout: () => void; FIXME: implement logout
 }
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -33,10 +38,10 @@ function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuth, setIsAuth] = useState<boolean>(false);
 
-  async function login(email: string, password: string) {
+  async function login(email: string, password: string): Promise<number> {
     dispatch({ type: 'SET_LOADING', payload: true });
 
-    axios
+    return axios
       .post(`${import.meta.env.VITE_API_URL}/auth/login`, {
         email: email,
         password: password,
@@ -44,45 +49,97 @@ function AuthProvider({ children }: AuthProviderProps) {
       .then((res) => {
         console.log(res.data);
 
-        switch (res.status) {
-          case 200:
-            setUser((user) => {
-              const resUser: User = res.data.payload;
+        if (res.status === 200) {
+          setUser((user) => {
+            const resUser: User = res.data.payload;
 
-              setIsAuth(true);
+            return {
+              ...user,
+              id: resUser.id,
+              isAdmin: resUser.isAdmin,
+              accessToken: resUser.accessToken,
+              refreshToken: resUser.refreshToken,
+            };
+          });
+          setIsAuth(true);
 
-              return {
-                ...user,
-                id: resUser.id,
-                isAdmin: resUser.isAdmin,
-                accessToken: resUser.accessToken,
-                refreshToken: resUser.refreshToken,
-                //email, mail can be stored as well, but i don't need it for now. will use id
-              };
-            });
+          dispatch({
+            type: 'SET_MESSAGE',
+            payload: 'Successfully logged in!',
+          });
+          dispatch({ type: 'SET_SEVERITY', payload: 'success' });
 
-            dispatch({
-              type: 'SET_MESSAGE',
-              payload: 'Successfully logged in!',
-            });
-            dispatch({ type: 'SET_SEVERITY', payload: 'success' });
-            break;
+          return res.status;
         }
       })
       .catch((err) => {
-        console.error(err);
+        const message = err.response.data.message;
 
+        console.error(message);
         dispatch({
           type: 'SET_MESSAGE',
-          payload: 'Invalid email or password',
+          payload: message,
         });
         dispatch({ type: 'SET_SEVERITY', payload: 'error' });
+
+        return err.response.status;
       })
       .finally(() => dispatch({ type: 'SET_LOADING', payload: false }));
   }
 
+  async function register(
+    fullName: string,
+    email: string,
+    password: string
+  ): Promise<number> {
+    dispatch({ type: 'SET_LOADING', payload: true });
+
+    return axios
+      .post(`${import.meta.env.VITE_API_URL}/auth/register`, {
+        name: fullName,
+        email: email,
+        password: password,
+        isAdmin: false,
+      })
+      .then((res) => {
+        console.log(res.data);
+        return res.status;
+      })
+      .catch((err) => {
+        console.error(err.response.data.message);
+        return err.response.status;
+      })
+      .finally(() => dispatch({ type: 'SET_LOADING', payload: false }));
+  }
+
+  async function refresh() {
+    axios
+      .post(`${import.meta.env.VITE_API_URL}/auth/refresh`, {
+        refreshToken: user?.refreshToken,
+      })
+      .then((res) => {
+        console.log(res.data);
+
+        setUser((user) => {
+          if (!user) return null;
+
+          const resUser: User = res.data.payload;
+
+          return {
+            ...user,
+            accessToken: resUser.accessToken,
+            refreshToken: resUser.refreshToken,
+          };
+        });
+        setIsAuth(true);
+      })
+      .catch((err) => {
+        console.error(err.response.data.message);
+      });
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isAuth, login }}>
+    <AuthContext.Provider value={{ user, isAuth, login, register, refresh }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,9 +4,11 @@ interface FormContextValue {
   // Validation concerns
   emailInput: string;
   passwordInput: string;
+  fullName: string;
   passwordConfirmInput: string;
   emailError: string;
   passwordError: string;
+  nameError: string;
 
   // After validation concerns
   message: string;
@@ -16,7 +18,8 @@ interface FormContextValue {
   dispatch: React.Dispatch<FormAction>;
 
   loginFormValidation: (email: string, password: string) => boolean;
-  signUpFormValidation?: (
+  signUpFormValidation: (
+    fullName: string,
     email: string,
     password1: string,
     password2: string
@@ -31,9 +34,11 @@ const initialState: FormContextValue = {
   // Validation concerns
   emailInput: '',
   passwordInput: '',
+  fullName: '',
   passwordConfirmInput: '',
   emailError: '',
   passwordError: '',
+  nameError: '',
 
   // After validation concerns
   message: '',
@@ -56,6 +61,8 @@ function reducer(state: FormContextValue, action: FormAction) {
       return { ...state, emailInput: action.payload as string };
     case 'SET_PASSWORD':
       return { ...state, passwordInput: action.payload as string };
+    case 'SET_NAME':
+      return { ...state, fullName: action.payload as string };
     case 'SET_PASSWORD_CONFIRM':
       return { ...state, passwordConfirmInput: action.payload as string };
     case 'SET_MESSAGE':
@@ -68,11 +75,15 @@ function reducer(state: FormContextValue, action: FormAction) {
         severity: action.payload as 'success' | 'error',
       };
     case 'RESET_VALIDATION':
-      return { ...state, emailError: '', passwordError: '' };
+      return { ...state, emailError: '', passwordError: '', nameError: '' };
     case 'SEND_ERROR_EMAIL':
       return { ...state, emailError: action.payload as string };
     case 'SEND_ERROR_PASSWORD':
       return { ...state, passwordError: action.payload as string };
+    case 'SEND_ERROR_NAME':
+      return { ...state, nameError: action.payload as string };
+    case 'RESET':
+      return { ...initialState };
     default:
       console.error('Invalid action type');
       return state;
@@ -114,8 +125,59 @@ function FormProvider({ children }: FormProviderProps) {
     return isValid;
   }
 
+  function signUpFormValidation(
+    fullName: string,
+    email: string,
+    password1: string,
+    password2: string
+  ): boolean {
+    let isValid = true;
+    dispatch({ type: 'RESET_VALIDATION' });
+
+    // Checking the name:
+    if (!fullName.trim()) {
+      dispatch({ type: 'SEND_ERROR_NAME', payload: 'Name is required' });
+      isValid = false;
+    }
+
+    // Checking the email:
+    const emailRegex = /\S+@\S+\.\S+/;
+
+    if (!email.trim()) {
+      dispatch({ type: 'SEND_ERROR_EMAIL', payload: 'Email is required' });
+      isValid = false;
+    } else if (!emailRegex.test(email)) {
+      dispatch({ type: 'SEND_ERROR_EMAIL', payload: 'Invalid email' });
+      isValid = false;
+    }
+
+    // Checking the password:
+    if (!password1.trim()) {
+      dispatch({
+        type: 'SEND_ERROR_PASSWORD',
+        payload: 'Password is required',
+      });
+      isValid = false;
+    } else if (password1 !== password2) {
+      dispatch({
+        type: 'SEND_ERROR_PASSWORD',
+        payload: 'Passwords do not match',
+      });
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
   return (
-    <FormContext.Provider value={{ ...state, dispatch, loginFormValidation }}>
+    <FormContext.Provider
+      value={{
+        ...state,
+        dispatch,
+        loginFormValidation,
+        signUpFormValidation,
+      }}
+    >
       {children}
     </FormContext.Provider>
   );

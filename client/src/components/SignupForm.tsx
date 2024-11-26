@@ -1,5 +1,9 @@
-import { Box, Button, TextField, SxProps } from '@mui/material';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Box, Button, TextField, SxProps } from '@mui/material';
+
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useFormContext } from '../hooks/useFormContext';
 
 const inputBlueHover: SxProps = {
   '& .MuiOutlinedInput-root': {
@@ -20,13 +24,51 @@ const inputBlueHover: SxProps = {
 function SignupForm(): JSX.Element {
   const navigate = useNavigate();
 
-  const handleSigninClick = () => {
+  const { register } = useAuthContext();
+  const {
+    emailInput,
+    passwordInput,
+    fullName,
+    emailError,
+    passwordError,
+    nameError,
+    passwordConfirmInput,
+    dispatch,
+    signUpFormValidation,
+  } = useFormContext();
+
+  function handleSigninClick() {
     navigate('/login');
-  };
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const isValid = signUpFormValidation(
+      fullName,
+      emailInput,
+      passwordInput,
+      passwordConfirmInput
+    );
+
+    if (!isValid) return;
+
+    const status = await register(fullName, emailInput, passwordInput);
+    if (status === 201) setTimeout(() => navigate('/login'), 1_250);
+  }
+
+  useEffect(() => {
+    dispatch({ type: 'RESET' });
+  }, [dispatch]);
 
   return (
-    <Box component='form' noValidate autoComplete='off' sx={{ marginTop: 1 }}>
-      {/* Full Name Input */}
+    <Box
+      component='form'
+      noValidate
+      autoComplete='off'
+      sx={{ marginTop: 1 }}
+      onSubmit={handleSubmit}
+    >
       <TextField
         fullWidth
         label='Full Name'
@@ -34,10 +76,15 @@ function SignupForm(): JSX.Element {
         margin='normal'
         variant='outlined'
         required
+        error={!!nameError}
+        helperText={nameError}
         sx={inputBlueHover}
+        value={fullName}
+        onChange={(e) =>
+          dispatch({ type: 'SET_NAME', payload: e.target.value })
+        }
       />
 
-      {/* Email Input */}
       <TextField
         fullWidth
         label='Email'
@@ -45,10 +92,15 @@ function SignupForm(): JSX.Element {
         margin='normal'
         variant='outlined'
         required
+        error={!!emailError}
+        helperText={emailError}
         sx={inputBlueHover}
+        value={emailInput}
+        onChange={(e) =>
+          dispatch({ type: 'SET_EMAIL', payload: e.target.value })
+        }
       />
 
-      {/* Password Input */}
       <TextField
         fullWidth
         label='Password'
@@ -56,10 +108,15 @@ function SignupForm(): JSX.Element {
         margin='normal'
         variant='outlined'
         required
+        error={!!passwordError}
+        helperText={passwordError}
         sx={inputBlueHover}
+        value={passwordInput}
+        onChange={(e) =>
+          dispatch({ type: 'SET_PASSWORD', payload: e.target.value })
+        }
       />
 
-      {/* Confirm Password Input */}
       <TextField
         fullWidth
         label='Confirm Password'
@@ -67,10 +124,17 @@ function SignupForm(): JSX.Element {
         margin='normal'
         variant='outlined'
         required
+        error={passwordInput !== passwordConfirmInput}
+        helperText={
+          passwordInput !== passwordConfirmInput ? 'Passwords do not match' : ''
+        }
         sx={inputBlueHover}
+        value={passwordConfirmInput}
+        onChange={(e) =>
+          dispatch({ type: 'SET_PASSWORD_CONFIRM', payload: e.target.value })
+        }
       />
 
-      {/* Sign Up Button */}
       <Button
         variant='contained'
         color='primary'

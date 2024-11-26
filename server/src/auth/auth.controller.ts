@@ -81,10 +81,11 @@ async function httpRegister(
     if (await usersModel.isUserExist(email))
       return Exceptions.conflict(res, 'User already exists');
 
-    const newUser: IUser | null = await usersModel.addUser(userBody);
+    // null check for name, email, and password in the request body
+    if (!userBody.name || !userBody.email || !userBody.password)
+      return Exceptions.badRequest(res, 'Invalid request body');
 
-    // to avoid crashes for bad request bodies
-    if (!newUser) return Exceptions.badRequest(res, 'Check the request body');
+    const newUser: IUser | null = await usersModel.addUser(userBody);
 
     res.status(201).json(newUser);
   } catch (err) {

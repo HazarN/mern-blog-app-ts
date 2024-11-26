@@ -1,8 +1,11 @@
 import { Box, Typography, Paper } from '@mui/material';
 
+import { useFormContext } from '../hooks/useFormContext';
+
 import Layout from './Layout';
 
 import Navbar from '../components/Navbar';
+import Spinner from '../components/Spinner';
 import SignupForm from '../components/SignupForm';
 
 const centeredBox: React.CSSProperties = {
@@ -21,6 +24,8 @@ const paperStyle: React.CSSProperties = {
 };
 
 function Signup(): JSX.Element {
+  const { loading } = useFormContext();
+
   return (
     <Layout>
       <Navbar />
@@ -31,9 +36,13 @@ function Signup(): JSX.Element {
             Sign Up
           </Typography>
 
-          <Typography variant='body1' gutterBottom color='textSecondary'>
-            Create an account to get started.
-          </Typography>
+          {loading ? (
+            <Spinner />
+          ) : (
+            <Typography variant='body1' gutterBottom color='textSecondary'>
+              Create an account to get started.
+            </Typography>
+          )}
 
           <SignupForm />
         </Paper>
