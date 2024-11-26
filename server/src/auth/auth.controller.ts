@@ -4,8 +4,10 @@ import { JwtPayload } from 'jsonwebtoken';
 import Exceptions from '../utils/Exceptions';
 import hashUtils from '../utils/hash';
 import jwtUtils from '../utils/jwt';
+
 import usersModel from '../models/users/users.model';
 import IUserPayload from './IUserPayload';
+import IUser from '../models/users/IUser';
 
 interface IUserCredentials {
   email: string;
@@ -57,6 +59,34 @@ async function httpLogin(
         },
       });
     }
+  } catch (err) {
+    return Exceptions.internal(
+      res,
+      'Check the terminal for more information',
+      err
+    );
+  }
+}
+
+// POST /register
+async function httpRegister(
+  req: Request<{}, {}, IUser>,
+  res: Response
+): Promise<void> {
+  try {
+    const userBody: IUser = req.body;
+    const { email } = userBody as IUser;
+
+    // to avoid duplicate users
+    if (await usersModel.isUserExist(email))
+      return Exceptions.conflict(res, 'User already exists');
+
+    const newUser: IUser | null = await usersModel.addUser(userBody);
+
+    // to avoid crashes for bad request bodies
+    if (!newUser) return Exceptions.badRequest(res, 'Check the request body');
+
+    res.status(201).json(newUser);
   } catch (err) {
     return Exceptions.internal(
       res,
@@ -149,6 +179,7 @@ async function httpRefreshToken(
 
 export default {
   httpLogin,
+  httpRegister,
   httpLogout,
   httpRefreshToken,
 };

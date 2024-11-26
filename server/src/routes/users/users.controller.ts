@@ -43,34 +43,6 @@ async function httpGetUserById(
   }
 }
 
-// POST /users
-async function httpAddUser(
-  req: Request<{}, {}, IUser>,
-  res: Response
-): Promise<void> {
-  try {
-    const userBody: IUser = req.body;
-    const { email } = userBody as IUser;
-
-    // to avoid duplicate users
-    if (await usersModel.isUserExist(email))
-      return Exceptions.conflict(res, 'User already exists');
-
-    const newUser: IUser | null = await usersModel.addUser(userBody);
-
-    // to avoid crashes for bad request bodies
-    if (!newUser) return Exceptions.badRequest(res, 'Check the request body');
-
-    res.status(201).json(newUser);
-  } catch (err) {
-    return Exceptions.internal(
-      res,
-      'Check the terminal for more information',
-      err
-    );
-  }
-}
-
 // PUT /users/id
 async function httpUpdateUser(
   req: Request<{ id: string }, {}, IUser>,
@@ -141,7 +113,6 @@ async function httpDeleteUser(
 export default {
   httpGetUsers,
   httpGetUserById,
-  httpAddUser,
   httpUpdateUser,
   httpDeleteUser,
 };

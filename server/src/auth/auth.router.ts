@@ -6,6 +6,7 @@ import authController from './auth.controller';
 const authRouter: Router = express.Router();
 
 authRouter.post('/login', authController.httpLogin);
+authRouter.post('/register', authController.httpRegister);
 authRouter.post('/refresh', authController.httpRefreshToken);
 
 // logout is a protected route

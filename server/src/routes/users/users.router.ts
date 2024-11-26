@@ -17,9 +17,6 @@ usersRouter.get(
   usersController.httpGetUserById
 );
 
-// FIXME: it is a better approach to use this function in the auth.controller.ts as a registry endpoint
-usersRouter.post('/', isAuthenticated, usersController.httpAddUser);
-
 usersRouter.put(
   '/:id',
   isAuthenticated,
