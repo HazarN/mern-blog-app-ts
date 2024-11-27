@@ -9,6 +9,9 @@ import usersModel from '../models/users/users.model';
 import IUserPayload from './IUserPayload';
 import IUser from '../models/users/IUser';
 
+enum Time {
+  SEVEN_DAYS_FROM_NOW = 7 * 24 * 60 * 60 * 1000,
+}
 interface IUserCredentials {
   email: string;
   password: string;
@@ -44,9 +47,19 @@ async function httpLogin(
       const accessToken = jwtUtils.generateAccessToken(user);
       const refreshToken = jwtUtils.generateRefreshToken(user);
 
+      console.log(`RefreshToken: ${refreshToken}`);
+
       // save the refresh token to the user document in order to use it later
       user.refreshToken = refreshToken;
       await user.save();
+
+      // sending the refresh token as a secured cookie
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
+        maxAge: Time.SEVEN_DAYS_FROM_NOW,
+      });
 
       res.status(200).json({
         message: 'Login successful',
@@ -55,7 +68,6 @@ async function httpLogin(
           name: user.name,
           isAdmin: user.isAdmin,
           accessToken,
-          refreshToken,
         },
       });
     }
@@ -99,7 +111,7 @@ async function httpRegister(
 
 // POST /logout
 async function httpLogout(req: Request, res: Response) {
-  const { refreshToken } = req.body;
+  const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken)
     return Exceptions.badRequest(res, 'Refresh token is required');
@@ -110,9 +122,17 @@ async function httpLogout(req: Request, res: Response) {
     if (!user) return Exceptions.notFound(res, 'User not found');
 
     // if the user is found, remove the refresh token from the user document
-
     user.refreshToken = null;
     await user.save();
+
+    console.log(`Removed RefreshToken: ${refreshToken}`);
+
+    // clearing the refresh token cookie
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+    });
 
     res.status(200).json({
       message: 'Logout successful',
@@ -127,11 +147,8 @@ async function httpLogout(req: Request, res: Response) {
 }
 
 // POST /refresh
-async function httpRefreshToken(
-  req: Request<{}, {}, { refreshToken: string }>,
-  res: Response
-) {
-  const refreshToken = req.body.refreshToken;
+async function httpRefreshToken(req: Request, res: Response) {
+  const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken)
     return Exceptions.badRequest(
@@ -160,13 +177,22 @@ async function httpRefreshToken(
     user.refreshToken = newRefreshToken;
     await user.save();
 
+    console.log(`Updated RefreshToken: ${newRefreshToken}`);
+
+    // update the refresh token cookie
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      maxAge: Time.SEVEN_DAYS_FROM_NOW,
+    });
+
     res.status(200).json({
       message: 'Token refreshed successfully',
       payload: {
         name: user.name,
         isAdmin: user.isAdmin,
         accessToken,
-        refreshToken: newRefreshToken,
       },
     });
   } catch (err) {

@@ -1,5 +1,6 @@
-import axios from 'axios';
 import { useState, createContext } from 'react';
+
+import axios from '../api/axios';
 
 import { useFormContext } from '../hooks/useFormContext';
 
@@ -42,7 +43,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     dispatch({ type: 'SET_LOADING', payload: true });
 
     return axios
-      .post(`${import.meta.env.VITE_API_URL}/auth/login`, {
+      .post(`/auth/login`, {
         email: email,
         password: password,
       })
@@ -95,7 +96,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     dispatch({ type: 'SET_LOADING', payload: true });
 
     return axios
-      .post(`${import.meta.env.VITE_API_URL}/auth/register`, {
+      .post(`/auth/register`, {
         name: fullName,
         email: email,
         password: password,
@@ -114,7 +115,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   async function refresh() {
     axios
-      .post(`${import.meta.env.VITE_API_URL}/auth/refresh`, {
+      .post(`/auth/refresh`, {
         refreshToken: user?.refreshToken,
       })
       .then((res) => {
