@@ -7,7 +7,9 @@ const authRouter: Router = express.Router();
 
 authRouter.post('/login', authController.httpLogin);
 authRouter.post('/register', authController.httpRegister);
-authRouter.post('/refresh', authController.httpRefreshToken);
+
+authRouter.get('/refresh', authController.httpRefreshToken);
+authRouter.get('/user', authController.httpGetAuthUser);
 
 // logout is a protected route
 authRouter.post('/logout', isAuthenticated, authController.httpLogout);

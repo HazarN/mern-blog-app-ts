@@ -56,9 +56,10 @@ async function httpLogin(
       // sending the refresh token as a secured cookie
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none',
+        secure: false,
+        sameSite: 'lax',
         maxAge: Time.SEVEN_DAYS_FROM_NOW,
+        path: '/',
       });
 
       res.status(200).json({
@@ -111,7 +112,7 @@ async function httpRegister(
 
 // POST /logout
 async function httpLogout(req: Request, res: Response) {
-  const refreshToken = req.cookies.refreshToken;
+  const refreshToken = req.cookies?.refreshToken;
 
   if (!refreshToken)
     return Exceptions.badRequest(res, 'Refresh token is required');
@@ -130,8 +131,8 @@ async function httpLogout(req: Request, res: Response) {
     // clearing the refresh token cookie
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      secure: false,
+      sameSite: 'lax',
     });
 
     res.status(200).json({
@@ -146,14 +147,14 @@ async function httpLogout(req: Request, res: Response) {
   }
 }
 
-// POST /refresh
+// GET /refresh
 async function httpRefreshToken(req: Request, res: Response) {
-  const refreshToken = req.cookies.refreshToken;
+  const refreshToken = req.cookies?.refreshToken;
 
   if (!refreshToken)
     return Exceptions.badRequest(
       res,
-      'Refresh token is required for the request body'
+      'Refresh token is required in the cookie'
     );
 
   try {
@@ -182,8 +183,8 @@ async function httpRefreshToken(req: Request, res: Response) {
     // update the refresh token cookie
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      secure: false,
+      sameSite: 'lax',
       maxAge: Time.SEVEN_DAYS_FROM_NOW,
     });
 
@@ -204,9 +205,49 @@ async function httpRefreshToken(req: Request, res: Response) {
   }
 }
 
+// GET /auth/user
+async function httpGetAuthUser(req: Request, res: Response) {
+  const refreshToken = req.cookies?.refreshToken;
+
+  if (!refreshToken)
+    return Exceptions.badRequest(
+      res,
+      'Refresh token is required in the cookie'
+    );
+
+  try {
+    const user: IUser | null = await usersModel.getUserByRefreshToken(
+      refreshToken,
+      true
+    );
+
+    if (!user) return Exceptions.notFound(res, 'User not found');
+
+    // if there is a user with the given refresh token, create a new access token and send it to the client
+    const accessToken = jwtUtils.generateAccessToken(user);
+
+    res.status(200).json({
+      message: 'User found',
+      payload: {
+        id: user.id,
+        name: user.name,
+        isAdmin: user.isAdmin,
+        accessToken,
+      },
+    });
+  } catch (err) {
+    return Exceptions.internal(
+      res,
+      'Check the terminal for more information',
+      err
+    );
+  }
+}
+
 export default {
   httpLogin,
   httpRegister,
   httpLogout,
   httpRefreshToken,
+  httpGetAuthUser,
 };

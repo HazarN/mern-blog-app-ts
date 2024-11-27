@@ -1,6 +1,6 @@
 import { useState, createContext } from 'react';
 
-import axios from '../api/axios';
+import axios, { axiosPrivate } from '../api/axios';
 
 import { useFormContext } from '../hooks/useFormContext';
 
@@ -9,7 +9,6 @@ export interface User {
   isAdmin: boolean;
 
   accessToken?: string;
-  refreshToken?: string;
 }
 
 interface AuthContextValue {
@@ -25,7 +24,7 @@ interface AuthContextValue {
     email: string,
     password: string
   ) => Promise<number>;
-  refresh: () => void;
+  refresh: () => Promise<string | undefined>;
   //logout: () => void; FIXME: implement logout
 }
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -43,10 +42,16 @@ function AuthProvider({ children }: AuthProviderProps) {
     dispatch({ type: 'SET_LOADING', payload: true });
 
     return axios
-      .post(`/auth/login`, {
-        email: email,
-        password: password,
-      })
+      .post(
+        `/auth/login`,
+        {
+          email: email,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         console.log(res.data);
 
@@ -59,7 +64,6 @@ function AuthProvider({ children }: AuthProviderProps) {
               id: resUser.id,
               isAdmin: resUser.isAdmin,
               accessToken: resUser.accessToken,
-              refreshToken: resUser.refreshToken,
             };
           });
           setIsAuth(true);
@@ -113,34 +117,36 @@ function AuthProvider({ children }: AuthProviderProps) {
       .finally(() => dispatch({ type: 'SET_LOADING', payload: false }));
   }
 
-  async function refresh() {
-    axios
-      .post(`/auth/refresh`, {
-        refreshToken: user?.refreshToken,
-      })
+  async function refresh(): Promise<string | undefined> {
+    return axiosPrivate
+      .get(`/auth/refresh`)
       .then((res) => {
         console.log(res.data);
+
+        const resUser: User = res.data.payload;
 
         setUser((user) => {
           if (!user) return null;
 
-          const resUser: User = res.data.payload;
-
           return {
             ...user,
             accessToken: resUser.accessToken,
-            refreshToken: resUser.refreshToken,
           };
         });
+
         setIsAuth(true);
+        return resUser.accessToken;
       })
       .catch((err) => {
         console.error(err.response.data.message);
+        return undefined;
       });
   }
 
   return (
-    <AuthContext.Provider value={{ user, isAuth, login, register, refresh }}>
+    <AuthContext.Provider
+      value={{ user, isAuth, setUser, setIsAuth, login, register, refresh }}
+    >
       {children}
     </AuthContext.Provider>
   );

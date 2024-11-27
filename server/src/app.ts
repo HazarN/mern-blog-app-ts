@@ -17,8 +17,8 @@ const corsPolicy = {
 };
 
 app.use(express.json());
-app.use(cookieParser());
 app.use(cors(corsPolicy));
+app.use(cookieParser());
 
 // server logging with an external package
 app.use(morgan('short'));
