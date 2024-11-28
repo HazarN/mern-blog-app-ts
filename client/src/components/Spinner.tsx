@@ -6,10 +6,10 @@ const spinnerStyle = {
   alignItems: 'center',
 };
 
-function Spinner(): JSX.Element {
+function Spinner({ size }: { size?: string }): JSX.Element {
   return (
     <Box sx={spinnerStyle}>
-      <CircularProgress />
+      <CircularProgress size={size} />
     </Box>
   );
 }

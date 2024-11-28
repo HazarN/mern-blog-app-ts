@@ -21,7 +21,7 @@ function generateAccessToken(user: IUser) {
   const payload: IUserPayload = { id: user.id, isAdmin: user.isAdmin };
 
   const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET as string, {
-    expiresIn: '5s',
+    expiresIn: '15m',
   });
 
   return accessToken;

@@ -207,7 +207,7 @@ async function httpDeletePost(
   const userId = Number(req.userPayload?.id);
 
   try {
-    const post = await postsModel.getPostById(id);
+    const post = await postsModel.getPostById(id, true);
     if (!post) return Exceptions.notFound(res, 'Post not found');
 
     const user = await usersModel.getUserById(userId, true);
@@ -223,7 +223,7 @@ async function httpDeletePost(
 
     // remove the post from the user's posts
     user.posts = user.posts.filter(
-      (posDashId) => String(posDashId) !== String(id)
+      (postDashId) => String(postDashId) !== String(post._id)
     );
     await user.save();
 

@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AuthProvider } from './contexts/AuthContext';
+import { PostProvider } from './contexts/PostContext';
 import { FormProvider } from './contexts/FormContext';
 
 import Login from './pages/Login';
@@ -26,7 +27,9 @@ function App(): JSX.Element {
               path='blog'
               element={
                 <ProtectedRoute>
-                  <AppLayout />
+                  <PostProvider>
+                    <AppLayout />
+                  </PostProvider>
                 </ProtectedRoute>
               }
             />

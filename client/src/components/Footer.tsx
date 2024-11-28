@@ -10,7 +10,13 @@ const footerStyles = {
   width: '100%',
 };
 
-function Footer(): JSX.Element {
+function Footer({
+  excludeFooter,
+}: {
+  excludeFooter: boolean | undefined;
+}): JSX.Element | null {
+  if (excludeFooter) return null;
+
   return (
     <Box sx={footerStyles}>
       <Typography variant='body2' color='inherit'>

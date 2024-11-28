@@ -10,8 +10,6 @@ export function useAxiosPrivate() {
   useEffect(() => {
     const reqInterceptor = axiosPrivate.interceptors.request.use(
       (config) => {
-        console.log('config', config);
-
         if (!config.headers['authorization']) {
           // then it's the first request
 
@@ -26,9 +24,6 @@ export function useAxiosPrivate() {
       (res) => res,
       async (err) => {
         const originalRequest = err?.config;
-
-        console.log(err?.response?.status === 403);
-        console.log(!originalRequest?.sent);
 
         if (err?.response?.status === 403 && !originalRequest?.sent) {
           originalRequest.sent = true;

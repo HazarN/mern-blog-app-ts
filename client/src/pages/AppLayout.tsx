@@ -1,57 +1,60 @@
 import { useEffect } from 'react';
-import { Typography } from '@mui/material';
+import { Container, Grid } from '@mui/material';
 
+import { usePostContext } from '../hooks/usePostContext';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
-import { useAuthContext } from '../hooks/useAuthContext';
-
-import { User } from '../contexts/AuthContext';
 
 import Layout from './Layout';
 
 import Navbar from '../components/Navbar';
+import Spinner from '../components/Spinner';
+import PostCard from '../components/PostCard';
+import SearchBar from '../components/SearchBar';
 
 function AppLayout(): JSX.Element {
-  const { setUser, setIsAuth } = useAuthContext();
-
+  const { posts, isLoading, dispatch } = usePostContext();
   const axiosPrivate = useAxiosPrivate();
 
-  /* useEffect(() => {
+  useEffect(() => {
     const controller = new AbortController();
 
-    // check if there is a refresh token, if not, redirect to login
-    async function onRefresh() {
+    async function getPosts() {
       try {
-        const res = await axiosPrivate.get('/auth/user', {
+        dispatch({ type: 'SET_LOADING', payload: true });
+        const res = await axiosPrivate.get('/posts', {
           signal: controller.signal,
-          withCredentials: true,
         });
 
-        console.log(res.data);
-
-        setUser((user: User) => {
-          if (!user) return null;
-
-          return {
-            ...user,
-            ...res.data.payload,
-          };
-        });
-        setIsAuth(true);
-      } catch (err) {
-        console.error(err);
+        dispatch({ type: 'SET_POSTS', payload: res.data });
+      } finally {
+        dispatch({ type: 'SET_LOADING', payload: false });
       }
     }
 
-    onRefresh();
+    getPosts();
 
     return () => controller.abort();
-  }, [axiosPrivate, setUser, setIsAuth]); */
+  }, [axiosPrivate, dispatch]);
 
   return (
-    <Layout>
-      <Navbar />
+    <Layout excludeFooter={true}>
+      <Navbar>
+        <SearchBar />
+      </Navbar>
 
-      <Typography variant='h4'>App Layout</Typography>
+      {isLoading ? (
+        <Container>
+          <Spinner size='100px' />
+        </Container>
+      ) : (
+        <Container maxWidth={'lg'}>
+          <Grid container spacing={3}>
+            {posts.map((post) => (
+              <PostCard key={post.id} id={post.id} />
+            ))}
+          </Grid>
+        </Container>
+      )}
     </Layout>
   );
 }

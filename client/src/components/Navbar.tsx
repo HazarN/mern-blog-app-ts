@@ -1,5 +1,13 @@
 import { Link } from 'react-router-dom';
-import { AppBar, Box, Toolbar, Typography } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+
 import ForumIcon from '@mui/icons-material/Forum';
 
 const spaceBetween: React.CSSProperties = {
@@ -18,12 +26,15 @@ interface NavbarProps {
   children?: React.ReactNode;
 }
 function Navbar({ children }: NavbarProps): JSX.Element {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <AppBar color='primary' position='sticky'>
       <Toolbar sx={spaceBetween}>
         <Box sx={wrap} component={Link} to='/'>
           <ForumIcon fontSize='large' />
-          <Typography variant='h6'>MERN | Blog App</Typography>
+          {!isMobile && <Typography variant='h6'>MERN | Blog App</Typography>}
         </Box>
 
         <Box>{children}</Box>
