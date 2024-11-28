@@ -37,7 +37,9 @@ function Navbar({ children }: NavbarProps): JSX.Element {
           {!isMobile && <Typography variant='h6'>MERN | Blog App</Typography>}
         </Box>
 
-        <Box>{children}</Box>
+        <Box sx={{ display: 'flex', gap: '.25rem', alignItems: 'center' }}>
+          {children}
+        </Box>
       </Toolbar>
     </AppBar>
   );

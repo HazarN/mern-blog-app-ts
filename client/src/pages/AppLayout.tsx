@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { Container, Grid } from '@mui/material';
 
+import { Post } from '../contexts/PostContext';
+
 import { usePostContext } from '../hooks/usePostContext';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 
@@ -10,10 +12,21 @@ import Navbar from '../components/Navbar';
 import Spinner from '../components/Spinner';
 import PostCard from '../components/PostCard';
 import SearchBar from '../components/SearchBar';
+import UserIcon from '../components/UserIcon';
+
+function search(query: string, posts: Post[]): Post[] {
+  return query.length > 0
+    ? posts.filter((post) =>
+        post.title.toLowerCase().includes(query.toLowerCase())
+      )
+    : posts;
+}
 
 function AppLayout(): JSX.Element {
-  const { posts, isLoading, dispatch } = usePostContext();
+  const { posts, isLoading, searchQuery, dispatch } = usePostContext();
   const axiosPrivate = useAxiosPrivate();
+
+  const searchedPosts = search(searchQuery, posts);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -39,6 +52,7 @@ function AppLayout(): JSX.Element {
   return (
     <Layout excludeFooter={true}>
       <Navbar>
+        <UserIcon />
         <SearchBar />
       </Navbar>
 
@@ -49,7 +63,7 @@ function AppLayout(): JSX.Element {
       ) : (
         <Container maxWidth={'lg'}>
           <Grid container spacing={3}>
-            {posts.map((post) => (
+            {searchedPosts.map((post) => (
               <PostCard key={post.id} id={post.id} />
             ))}
           </Grid>

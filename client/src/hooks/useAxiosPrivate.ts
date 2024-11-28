@@ -5,7 +5,7 @@ import { axiosPrivate } from '../api/axios';
 import { useAuthContext } from './useAuthContext';
 
 export function useAxiosPrivate() {
-  const { user, refresh } = useAuthContext();
+  const { userCredentials, refresh } = useAuthContext();
 
   useEffect(() => {
     const reqInterceptor = axiosPrivate.interceptors.request.use(
@@ -13,7 +13,9 @@ export function useAxiosPrivate() {
         if (!config.headers['authorization']) {
           // then it's the first request
 
-          config.headers['authorization'] = `Bearer ${user?.accessToken}`;
+          config.headers[
+            'authorization'
+          ] = `Bearer ${userCredentials?.accessToken}`;
         }
 
         return config;
@@ -48,7 +50,7 @@ export function useAxiosPrivate() {
       axiosPrivate.interceptors.request.eject(reqInterceptor);
       axiosPrivate.interceptors.response.eject(resInterceptor);
     };
-  }, [user, refresh]);
+  }, [userCredentials, refresh]);
 
   return axiosPrivate;
 }

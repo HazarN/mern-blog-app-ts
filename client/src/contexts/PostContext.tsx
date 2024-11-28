@@ -10,6 +10,7 @@ export interface Post {
 
 interface PostContextValue {
   posts: Post[];
+  searchQuery: string;
   isLoading: boolean;
 
   dispatch: React.Dispatch<PostAction>;
@@ -18,15 +19,17 @@ interface PostContextValue {
 
 interface PostState {
   posts: Post[];
+  searchQuery: string;
   isLoading: boolean;
 }
 interface PostAction {
   type: string;
-  payload: Post | Post[] | boolean;
+  payload: Post | Post[] | boolean | string;
 }
 
 const initialState: PostState = {
   posts: [],
+  searchQuery: '',
   isLoading: false,
 };
 function reducer(state: PostState, action: PostAction) {
@@ -41,6 +44,11 @@ function reducer(state: PostState, action: PostAction) {
         ...state,
         isLoading: action.payload as boolean,
       };
+    case 'SET_SEARCH_QUERY':
+      return {
+        ...state,
+        searchQuery: action.payload as string,
+      };
     default:
       console.log('Invalid action type');
       return state;
@@ -54,14 +62,14 @@ interface PostProviderProps {
 }
 function PostProvider({ children }: PostProviderProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { posts, isLoading } = state;
+  const { posts, isLoading, searchQuery } = state;
 
   const getPostById = (id: number) =>
     posts.find((post: Post) => post.id === id);
 
   return (
     <PostContext.Provider
-      value={{ posts: posts, isLoading, dispatch, getPostById }}
+      value={{ posts: posts, isLoading, searchQuery, dispatch, getPostById }}
     >
       {children}
     </PostContext.Provider>

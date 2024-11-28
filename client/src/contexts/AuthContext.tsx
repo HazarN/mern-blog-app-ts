@@ -4,7 +4,7 @@ import axios, { axiosPrivate } from '../api/axios';
 
 import { useFormContext } from '../hooks/useFormContext';
 
-export interface User {
+export interface UserCredentials {
   id: number;
   isAdmin: boolean;
 
@@ -12,10 +12,12 @@ export interface User {
 }
 
 interface AuthContextValue {
-  user: User | null;
+  userCredentials: UserCredentials | null;
+  username?: string;
   isAuth: boolean;
 
-  setUser?: (user: User | null) => void;
+  setUserCredentials?: (userCredentials: UserCredentials | null) => void;
+  setUsername: (username: string) => void;
   setIsAuth?: (isAuth: boolean) => void;
 
   login: (email: string, password: string) => Promise<number>;
@@ -33,13 +35,15 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 function AuthProvider({ children }: AuthProviderProps) {
-  const { dispatch } = useFormContext();
+  const { dispatch: formDispatch } = useFormContext();
 
-  const [user, setUser] = useState<User | null>(null);
+  const [userCredentials, setUserCredentials] =
+    useState<UserCredentials | null>(null);
+  const [username, setUsername] = useState<string | undefined>(undefined);
   const [isAuth, setIsAuth] = useState<boolean>(false);
 
   async function login(email: string, password: string): Promise<number> {
-    dispatch({ type: 'SET_LOADING', payload: true });
+    formDispatch({ type: 'SET_LOADING', payload: true });
 
     return axios
       .post(
@@ -56,11 +60,11 @@ function AuthProvider({ children }: AuthProviderProps) {
         console.log(res.data);
 
         if (res.status === 200) {
-          setUser((user) => {
-            const resUser: User = res.data.payload;
+          setUserCredentials((userCredentials) => {
+            const resUser: UserCredentials = res.data.payload;
 
             return {
-              ...user,
+              ...userCredentials,
               id: resUser.id,
               isAdmin: resUser.isAdmin,
               accessToken: resUser.accessToken,
@@ -68,11 +72,11 @@ function AuthProvider({ children }: AuthProviderProps) {
           });
           setIsAuth(true);
 
-          dispatch({
+          formDispatch({
             type: 'SET_MESSAGE',
             payload: 'Successfully logged in!',
           });
-          dispatch({ type: 'SET_SEVERITY', payload: 'success' });
+          formDispatch({ type: 'SET_SEVERITY', payload: 'success' });
 
           return res.status;
         }
@@ -81,15 +85,15 @@ function AuthProvider({ children }: AuthProviderProps) {
         const message = err.response.data.message;
 
         console.error(message);
-        dispatch({
+        formDispatch({
           type: 'SET_MESSAGE',
           payload: message,
         });
-        dispatch({ type: 'SET_SEVERITY', payload: 'error' });
+        formDispatch({ type: 'SET_SEVERITY', payload: 'error' });
 
         return err.response.status;
       })
-      .finally(() => dispatch({ type: 'SET_LOADING', payload: false }));
+      .finally(() => formDispatch({ type: 'SET_LOADING', payload: false }));
   }
 
   async function register(
@@ -97,7 +101,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     email: string,
     password: string
   ): Promise<number> {
-    dispatch({ type: 'SET_LOADING', payload: true });
+    formDispatch({ type: 'SET_LOADING', payload: true });
 
     return axios
       .post(`/auth/register`, {
@@ -114,7 +118,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         console.error(err.response.data.message);
         return err.response.status;
       })
-      .finally(() => dispatch({ type: 'SET_LOADING', payload: false }));
+      .finally(() => formDispatch({ type: 'SET_LOADING', payload: false }));
   }
 
   async function refresh(): Promise<string | undefined> {
@@ -123,13 +127,13 @@ function AuthProvider({ children }: AuthProviderProps) {
       .then((res) => {
         console.log(res.data);
 
-        const resUser: User = res.data.payload;
+        const resUser: UserCredentials = res.data.payload;
 
-        setUser((user) => {
-          if (!user) return null;
+        setUserCredentials((userCredentials) => {
+          if (!userCredentials) return null;
 
           return {
-            ...user,
+            ...userCredentials,
             accessToken: resUser.accessToken,
           };
         });
@@ -139,13 +143,24 @@ function AuthProvider({ children }: AuthProviderProps) {
       })
       .catch((err) => {
         console.error(err.response.data.message);
+        setIsAuth(false);
         return undefined;
       });
   }
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuth, setUser, setIsAuth, login, register, refresh }}
+      value={{
+        userCredentials,
+        username,
+        isAuth,
+        setUserCredentials,
+        setUsername,
+        setIsAuth,
+        login,
+        register,
+        refresh,
+      }}
     >
       {children}
     </AuthContext.Provider>
