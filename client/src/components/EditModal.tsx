@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -9,7 +10,6 @@ import {
 
 import { usePostContext } from '../hooks/usePostContext';
 import { useModalContext } from '../hooks/useModalContext';
-import { useEffect } from 'react';
 
 function EditModal(): JSX.Element {
   const { currentPost } = usePostContext();

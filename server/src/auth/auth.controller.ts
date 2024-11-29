@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
-import { JwtPayload } from 'jsonwebtoken';
 
-import Exceptions from '../utils/Exceptions';
-import hashUtils from '../utils/hash';
 import jwtUtils from '../utils/jwt';
+import hashUtils from '../utils/hash';
+import Exceptions from '../utils/Exceptions';
 
-import usersModel from '../models/users/users.model';
 import IUserPayload from './IUserPayload';
 import IUser from '../models/users/IUser';
+import usersModel from '../models/users/users.model';
 
 enum Time {
   SEVEN_DAYS_FROM_NOW = 7 * 24 * 60 * 60 * 1000,

@@ -1,5 +1,5 @@
+import { Link } from 'react-router-dom';
 import { Button, Typography, Container } from '@mui/material';
-import { Link } from 'react-router-dom'; // Assuming you're using React Router
 
 const containerWrapper = {
   display: 'flex',

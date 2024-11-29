@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, TextField, SxProps } from '@mui/material';
+import { Box, Button, TextField, SxProps, Alert } from '@mui/material';
 
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useFormContext } from '../hooks/useFormContext';
@@ -8,15 +8,15 @@ import { useFormContext } from '../hooks/useFormContext';
 const inputBlueHover: SxProps = {
   '& .MuiOutlinedInput-root': {
     '&:hover fieldset': {
-      borderColor: '#1976d2', // Blue border on hover
+      borderColor: '#1976d2',
     },
     '&.Mui-focused fieldset': {
-      borderColor: '#1976d2', // Blue border on focus
+      borderColor: '#1976d2',
     },
   },
   '& .MuiInputLabel-root': {
     '&.Mui-focused': {
-      color: '#1976d2', // Floating label color on focus
+      color: '#1976d2',
     },
   },
 };
@@ -28,6 +28,8 @@ function SignupForm(): JSX.Element {
   const {
     emailInput,
     passwordInput,
+    message,
+    severity,
     fullName,
     emailError,
     passwordError,
@@ -162,6 +164,12 @@ function SignupForm(): JSX.Element {
       >
         Already have an account? Sign In
       </Button>
+
+      {message && (
+        <Alert severity={severity} sx={{ marginTop: 2 }}>
+          {message}
+        </Alert>
+      )}
     </Box>
   );
 }

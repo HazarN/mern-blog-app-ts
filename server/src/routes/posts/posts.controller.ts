@@ -27,37 +27,6 @@ async function httpGetPosts(req: IRequest, res: Response): Promise<void> {
   }
 }
 
-async function httpGetPostsWithUsers(
-  req: Request,
-  res: Response
-): Promise<void> {
-  try {
-    let posts: IPost[] | null = await postsModel.getPosts();
-
-    const postAuthors = new Array<IUser>();
-
-    for (const post of posts) {
-      const user = await usersModel.getUserByDashId(String(post.user));
-      postAuthors.push({
-        id: user?.id,
-        name: user?.name,
-      } as IUser);
-    }
-
-    const postsWithAuthors = posts.map((post, index) => {
-      return { ...post.toObject(), author: postAuthors[index] };
-    });
-
-    res.status(200).json(postsWithAuthors);
-  } catch (err) {
-    return Exceptions.internal(
-      res,
-      'Check the terminal for more information',
-      err
-    );
-  }
-}
-
 // GET /posts/id
 async function httpGetPostById(
   req: IRequest<{ id: number }>,
@@ -277,7 +246,6 @@ async function httpDeletePost(
 
 export default {
   httpGetPosts,
-  httpGetPostsWithUsers,
   httpGetPostById,
   httpGetUserPosts,
   httpAddPostToAny,

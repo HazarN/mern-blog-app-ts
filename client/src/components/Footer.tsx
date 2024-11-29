@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 
-const footerStyles = {
+const footerStyles: React.CSSProperties = {
   backgroundColor: 'secondary.main',
   color: '#fff',
   padding: '.75rem 0',

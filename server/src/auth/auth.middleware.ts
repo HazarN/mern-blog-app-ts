@@ -1,8 +1,9 @@
 import { Response, NextFunction } from 'express';
-
 import { IRequest } from 'types/express';
-import Exceptions from '../utils/Exceptions';
+
 import jwtUtils from '../utils/jwt';
+import Exceptions from '../utils/Exceptions';
+
 import IUserPayload from './IUserPayload';
 
 // Check if the user is authenticated

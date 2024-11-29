@@ -1,7 +1,8 @@
 import { DeleteResult } from 'mongoose';
 
-import IUser from './IUser';
 import users from './users.schema';
+
+import IUser from './IUser';
 
 const DEFAULT_ID = 1000;
 

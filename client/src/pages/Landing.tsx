@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom';
 import { Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 import Layout from './Layout';
 
-import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
+import Navbar from '../components/Navbar';
 import Features from '../components/Features';
 
 function Landing(): JSX.Element {

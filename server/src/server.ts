@@ -2,10 +2,10 @@ import dotenv from 'dotenv';
 import { createServer } from 'http';
 
 import app from './app';
-import displayMessage from './utils/display';
-import mongoUtils from './utils/mongo';
 
-// in order to use the .env file
+import mongoUtils from './utils/mongo';
+import displayMessage from './utils/display';
+
 dotenv.config();
 
 const server = createServer(app);

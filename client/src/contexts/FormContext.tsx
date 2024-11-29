@@ -31,7 +31,6 @@ interface FormAction {
 }
 
 const initialState: FormContextValue = {
-  // Validation concerns
   emailInput: '',
   passwordInput: '',
   fullName: '',
@@ -40,7 +39,6 @@ const initialState: FormContextValue = {
   passwordError: '',
   nameError: '',
 
-  // After validation concerns
   message: '',
   loading: false,
   severity: 'success',

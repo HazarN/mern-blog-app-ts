@@ -8,8 +8,9 @@ import { useModalContext } from '../hooks/useModalContext';
 import EditModal from './EditModal';
 
 import { cardStyles } from '../styles/card-styles';
+import React from 'react';
 
-const buttonContainer = {
+const buttonContainer: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'flex-end',
   margin: '1rem',

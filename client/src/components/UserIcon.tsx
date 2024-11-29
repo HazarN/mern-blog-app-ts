@@ -4,9 +4,17 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { axiosPrivate } from '../api/axios';
 
 import { useAuthContext } from '../hooks/useAuthContext';
+import { Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 function UserIcon(): JSX.Element | null {
-  const { userCredentials, username, setUsername } = useAuthContext();
+  const navigate = useNavigate();
+  const { userCredentials, username, setUsername, logout } = useAuthContext();
+
+  function handleLogout() {
+    logout();
+    navigate('/');
+  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -37,6 +45,13 @@ function UserIcon(): JSX.Element | null {
     <>
       {username}
       <AccountBoxIcon fontSize='large' />
+      <Button
+        sx={{ color: 'white', borderColor: 'white' }}
+        variant='outlined'
+        onClick={handleLogout}
+      >
+        Logout
+      </Button>
     </>
   );
 }

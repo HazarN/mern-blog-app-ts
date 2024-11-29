@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Box, Button, Container, Typography } from '@mui/material';
 
-const boxStyles = {
+const boxStyles: React.CSSProperties = {
   backgroundColor: 'background.default',
   padding: '6rem 0',
   textAlign: 'center',

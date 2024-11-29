@@ -11,8 +11,6 @@ const postsRouter: Router = express.Router();
 
 postsRouter.get('/', postsController.httpGetPosts);
 
-postsRouter.get('/with-authors', postsController.httpGetPostsWithUsers as any);
-
 postsRouter.get('/:id', postsController.httpGetPostById);
 postsRouter.get(
   '/user/:userId',

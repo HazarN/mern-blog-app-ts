@@ -4,9 +4,9 @@ import { useFormContext } from '../hooks/useFormContext';
 
 import Layout from './Layout';
 
-import LoginForm from '../components/LoginForm';
 import Navbar from '../components/Navbar';
 import Spinner from '../components/Spinner';
+import LoginForm from '../components/LoginForm';
 
 const centeredBox: React.CSSProperties = {
   display: 'flex',

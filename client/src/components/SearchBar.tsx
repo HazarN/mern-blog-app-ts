@@ -1,8 +1,18 @@
-import { InputBase, Paper, Box } from '@mui/material';
+import { InputBase, Paper, Box, SxProps } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 import { usePostContext } from '../hooks/usePostContext';
 import { useEffect, useRef } from 'react';
+
+const paperStyles: SxProps = {
+  display: 'flex',
+  alignItems: 'center',
+  width: 300,
+  p: '2px 4px',
+  borderRadius: 20,
+  boxShadow: 3,
+  backgroundColor: 'white',
+};
 
 function SearchBar(): JSX.Element {
   const { searchQuery, dispatch } = usePostContext();
@@ -23,17 +33,7 @@ function SearchBar(): JSX.Element {
   }, [dispatch]);
 
   return (
-    <Paper
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        width: 300,
-        p: '2px 4px',
-        borderRadius: 20,
-        boxShadow: 3,
-        backgroundColor: 'white',
-      }}
-    >
+    <Paper sx={paperStyles}>
       <InputBase
         sx={{ ml: 1, flex: 1 }}
         placeholder='Search posts...'

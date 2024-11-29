@@ -27,7 +27,7 @@ interface AuthContextValue {
     password: string
   ) => Promise<number>;
   refresh: () => Promise<string | undefined>;
-  //logout: () => void; FIXME: implement logout
+  logout: () => void;
 }
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -112,10 +112,22 @@ function AuthProvider({ children }: AuthProviderProps) {
       })
       .then((res) => {
         console.log(res.data);
+
+        formDispatch({
+          type: 'SET_MESSAGE',
+          payload: 'Successfully logged in!',
+        });
+        formDispatch({ type: 'SET_SEVERITY', payload: 'success' });
         return res.status;
       })
       .catch((err) => {
         console.error(err.response.data.message);
+        formDispatch({
+          type: 'SET_MESSAGE',
+          payload: 'Email is not a unique email',
+        });
+        formDispatch({ type: 'SET_SEVERITY', payload: 'error' });
+
         return err.response.status;
       })
       .finally(() => formDispatch({ type: 'SET_LOADING', payload: false }));
@@ -148,6 +160,27 @@ function AuthProvider({ children }: AuthProviderProps) {
       });
   }
 
+  async function logout() {
+    try {
+      if (!userCredentials) return;
+
+      const res = await axiosPrivate.post(
+        `/auth/logout`,
+        {},
+        {
+          headers: { authorization: `Bearer ${userCredentials?.accessToken}` },
+        }
+      );
+
+      setUserCredentials(null);
+      setIsAuth(false);
+
+      console.log('Successfully logged out!', res.data);
+    } catch {
+      console.error('Failed to log out!');
+    }
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -160,6 +193,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         login,
         register,
         refresh,
+        logout,
       }}
     >
       {children}

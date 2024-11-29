@@ -1,6 +1,7 @@
 import { DeleteResult, Schema } from 'mongoose';
 
 import posts from './posts.schema';
+
 import IPost from './IPost';
 import IPostInput from './IPostInput';
 

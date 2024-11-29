@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 import hashUtils from '../../utils/hash';
+
 import IUser from './IUser';
 
 const userSchema: Schema = new Schema({

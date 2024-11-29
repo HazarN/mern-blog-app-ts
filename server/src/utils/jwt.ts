@@ -1,10 +1,11 @@
 import dotenv from 'dotenv';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Response } from 'express';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import { IRequest } from '../../types/express';
 
 import displayMessage from './display';
+
 import IUser from '../models/users/IUser';
 import IUserPayload from 'src/auth/IUserPayload';
 

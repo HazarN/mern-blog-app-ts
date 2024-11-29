@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
 import { Schema } from 'mongoose';
+import { Request, Response } from 'express';
 
-import Exceptions from '../../utils/Exceptions';
 import hashUtils from '../../utils/hash';
+import Exceptions from '../../utils/Exceptions';
 
 import IPost from 'src/models/posts/IPost';
 import IUser from '../../models/users/IUser';

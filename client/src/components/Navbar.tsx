@@ -7,7 +7,6 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-
 import ForumIcon from '@mui/icons-material/Forum';
 
 const spaceBetween: React.CSSProperties = {
@@ -32,7 +31,7 @@ function Navbar({ children }: NavbarProps): JSX.Element {
   return (
     <AppBar color='primary' position='sticky'>
       <Toolbar sx={spaceBetween}>
-        <Box sx={wrap} component={Link} to='/'>
+        <Box sx={wrap} component={Link} to='/blog'>
           <ForumIcon fontSize='large' />
           {!isMobile && <Typography variant='h6'>MERN | Blog App</Typography>}
         </Box>

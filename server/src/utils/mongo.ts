@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 
 import displayMessage from './display';
 
-// in order to get the database credentials from the .env file
 dotenv.config();
 
 async function connectToMongo(): Promise<void> {
