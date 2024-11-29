@@ -7,9 +7,12 @@ import {
   Button,
 } from '@mui/material';
 
+import { usePostContext } from '../hooks/usePostContext';
 import { useModalContext } from '../hooks/useModalContext';
+import { useEffect } from 'react';
 
 function EditModal(): JSX.Element {
+  const { currentPost } = usePostContext();
   const {
     isEditModalOpen,
     modalTitle,
@@ -18,6 +21,11 @@ function EditModal(): JSX.Element {
     handleCloseEditModal,
     handleEditPost,
   } = useModalContext();
+
+  useEffect(() => {
+    dispatch({ type: 'EDIT_TITLE', payload: currentPost?.title || '' });
+    dispatch({ type: 'EDIT_CONTENT', payload: currentPost?.content || '' });
+  }, [currentPost, dispatch]);
 
   return (
     <Dialog open={isEditModalOpen} onClose={handleCloseEditModal}>
