@@ -23,8 +23,8 @@ function UserIcon(): JSX.Element | null {
         });
 
         setUsername(res.data.name);
-      } catch (err) {
-        console.error(err);
+      } catch {
+        return;
       }
     }
 

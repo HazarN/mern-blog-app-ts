@@ -1,7 +1,7 @@
 import { DeleteResult } from 'mongoose';
 
-import users from './users.schema';
 import IUser from './IUser';
+import users from './users.schema';
 
 const DEFAULT_ID = 1000;
 
@@ -22,6 +22,10 @@ export default {
     wantDashId: boolean = false
   ): Promise<IUser | null> {
     return await users.findOne({ id }, { _id: Number(wantDashId), __v: 0 });
+  },
+
+  async getUserByDashId(_id: string): Promise<IUser | null> {
+    return await users.findOne({ _id }, { _id: 0, __v: 0 });
   },
 
   async getUserByEmail(

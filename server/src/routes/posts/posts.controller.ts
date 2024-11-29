@@ -2,21 +2,53 @@ import { Response } from 'express';
 import { Schema } from 'mongoose';
 
 import { IRequest } from '../../../types/express';
-import IPost from '../../models/posts/IPost';
+
 import Exceptions from '../../utils/Exceptions';
-import postsModel from '../../models/posts/posts.model';
+
+import IUser from 'src/models/users/IUser';
+import IPost from '../../models/posts/IPost';
 import usersModel from 'src/models/users/users.model';
+import postsModel from '../../models/posts/posts.model';
 
 // GET /posts
 async function httpGetPosts(req: IRequest, res: Response): Promise<void> {
   try {
     const posts: IPost[] | null = await postsModel.getPosts();
 
-    console.log('posts', posts);
-
     if (!posts) return Exceptions.notFound(res, 'Posts not found');
 
     res.status(200).json(posts);
+  } catch (err) {
+    return Exceptions.internal(
+      res,
+      'Check the terminal for more information',
+      err
+    );
+  }
+}
+
+async function httpGetPostsWithUsers(
+  req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    let posts: IPost[] | null = await postsModel.getPosts();
+
+    const postAuthors = new Array<IUser>();
+
+    for (const post of posts) {
+      const user = await usersModel.getUserByDashId(String(post.user));
+      postAuthors.push({
+        id: user?.id,
+        name: user?.name,
+      } as IUser);
+    }
+
+    const postsWithAuthors = posts.map((post, index) => {
+      return { ...post.toObject(), author: postAuthors[index] };
+    });
+
+    res.status(200).json(postsWithAuthors);
   } catch (err) {
     return Exceptions.internal(
       res,
@@ -188,7 +220,13 @@ async function httpUpdateUserPost(
 
     if (!updatedPost) return Exceptions.notFound(res, 'Post not found');
 
-    res.status(200).json({ updatedPost, to: { userName: user.name } });
+    res.status(200).json({
+      updatedPost,
+      to: {
+        id: user.id,
+        name: user.name,
+      },
+    });
   } catch (err) {
     return Exceptions.internal(
       res,
@@ -239,6 +277,7 @@ async function httpDeletePost(
 
 export default {
   httpGetPosts,
+  httpGetPostsWithUsers,
   httpGetPostById,
   httpGetUserPosts,
   httpAddPostToAny,

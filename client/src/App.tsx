@@ -3,7 +3,9 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { PostProvider } from './contexts/PostContext';
 import { FormProvider } from './contexts/FormContext';
+import { ModalProvider } from './contexts/ModalContext';
 
+import Post from './pages/Post';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Landing from './pages/Landing';
@@ -29,6 +31,19 @@ function App(): JSX.Element {
                 <ProtectedRoute>
                   <PostProvider>
                     <AppLayout />
+                  </PostProvider>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path='blog/:id'
+              element={
+                <ProtectedRoute>
+                  <PostProvider>
+                    <ModalProvider>
+                      <Post />
+                    </ModalProvider>
                   </PostProvider>
                 </ProtectedRoute>
               }

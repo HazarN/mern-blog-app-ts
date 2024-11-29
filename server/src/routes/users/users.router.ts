@@ -10,6 +10,7 @@ import {
 const usersRouter: Router = express.Router();
 
 usersRouter.get('/', isAuthenticated, restrict, usersController.httpGetUsers);
+usersRouter.get('/post/:postId', usersController.httpGetUserByPostId);
 usersRouter.get(
   '/:id',
   isAuthenticated,

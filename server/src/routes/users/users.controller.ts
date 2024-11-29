@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
+import { Schema } from 'mongoose';
 
-import IUser from '../../models/users/IUser';
-import usersModel from '../../models/users/users.model';
 import Exceptions from '../../utils/Exceptions';
 import hashUtils from '../../utils/hash';
+
 import IPost from 'src/models/posts/IPost';
+import IUser from '../../models/users/IUser';
 import postsModel from 'src/models/posts/posts.model';
-import { Schema } from 'mongoose';
+import usersModel from '../../models/users/users.model';
 
 // GET /users
 async function httpGetUsers(_: Request, res: Response): Promise<void> {
@@ -34,6 +35,37 @@ async function httpGetUserById(
     if (!user) return Exceptions.notFound(res, 'User not found');
 
     res.status(200).json(user);
+  } catch (err) {
+    return Exceptions.internal(
+      res,
+      'Check the terminal for more information',
+      err
+    );
+  }
+}
+
+// GET /users/post/id
+async function httpGetUserByPostId(
+  req: Request<{ postId: string }>,
+  res: Response
+) {
+  const { postId } = req.params;
+
+  try {
+    const post: IPost | null = await postsModel.getPostById(Number(postId));
+
+    if (!post) return Exceptions.notFound(res, 'Post not found');
+
+    const user: IUser | null = await usersModel.getUserByDashId(
+      String(post.user)
+    );
+
+    if (!user) return Exceptions.notFound(res, 'User not found');
+
+    res.status(200).json({
+      id: user.id,
+      name: user.name,
+    });
   } catch (err) {
     return Exceptions.internal(
       res,
@@ -113,6 +145,7 @@ async function httpDeleteUser(
 export default {
   httpGetUsers,
   httpGetUserById,
+  httpGetUserByPostId,
   httpUpdateUser,
   httpDeleteUser,
 };

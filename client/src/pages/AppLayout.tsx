@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Grid } from '@mui/material';
 
 import { Post } from '../contexts/PostContext';
@@ -11,8 +12,8 @@ import Layout from './Layout';
 import Navbar from '../components/Navbar';
 import Spinner from '../components/Spinner';
 import PostCard from '../components/PostCard';
-import SearchBar from '../components/SearchBar';
 import UserIcon from '../components/UserIcon';
+import SearchBar from '../components/SearchBar';
 
 function search(query: string, posts: Post[]): Post[] {
   return query.length > 0
@@ -23,10 +24,24 @@ function search(query: string, posts: Post[]): Post[] {
 }
 
 function AppLayout(): JSX.Element {
-  const { posts, isLoading, searchQuery, dispatch } = usePostContext();
+  const navigate = useNavigate();
+
+  const { posts, isLoading, searchQuery, dispatch, getPostById } =
+    usePostContext();
   const axiosPrivate = useAxiosPrivate();
 
   const searchedPosts = search(searchQuery, posts);
+
+  function handleClickPost(id: number) {
+    const clickedPost = posts.find((post) => post.id === id);
+    if (clickedPost) {
+      navigate(`/blog/${id}`);
+      dispatch({
+        type: 'SET_CURRENT_POST',
+        payload: getPostById(Number(id)) as Post,
+      });
+    }
+  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -64,7 +79,11 @@ function AppLayout(): JSX.Element {
         <Container maxWidth={'lg'}>
           <Grid container spacing={3}>
             {searchedPosts.map((post) => (
-              <PostCard key={post.id} id={post.id} />
+              <PostCard
+                key={post.id}
+                id={post.id}
+                onClickPost={handleClickPost}
+              />
             ))}
           </Grid>
         </Container>

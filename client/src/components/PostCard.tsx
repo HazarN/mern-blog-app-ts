@@ -2,21 +2,7 @@ import { Box, Card, Grid, Typography } from '@mui/material';
 
 import { usePostContext } from '../hooks/usePostContext';
 
-const cardStyles: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  height: '100%',
-
-  margin: '1rem',
-  padding: '1rem',
-
-  borderTop: '15px solid',
-  borderTopColor: 'primary.main',
-  borderBottom: '5px solid',
-  borderBottomColor: 'secondary.main',
-  cursor: 'pointer',
-};
+import { cardStyles } from '../styles/card-styles';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
@@ -24,7 +10,13 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
 });
 
-function PostCard({ id }: { id: number }): JSX.Element | null {
+function PostCard({
+  id,
+  onClickPost,
+}: {
+  id: number;
+  onClickPost: (id: number) => void;
+}): JSX.Element | null {
   const { getPostById } = usePostContext();
 
   const post = getPostById(id);
@@ -34,19 +26,20 @@ function PostCard({ id }: { id: number }): JSX.Element | null {
   post.createdAt = new Date(post.createdAt);
   post.lastUpdate = new Date(post.lastUpdate);
 
+  const handleClick = () => {
+    onClickPost(post.id);
+  };
+
   return (
     <Grid item xs={12} sm={6} md={4}>
-      <Card sx={cardStyles} key={post.id}>
-        <Box>
-          <Typography variant='h6'>{post.title}</Typography>
-        </Box>
+      <Card sx={cardStyles} key={post.id} onClick={handleClick}>
+        <Typography variant='h5'>{post.title}</Typography>
 
-        <Typography
-          fontSize={'0.8rem'}
-          sx={{ display: 'flex', justifyContent: 'flex-end' }}
-        >
-          Last updated: {dateFormatter.format(post.lastUpdate)}
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Typography fontSize={'0.75rem'}>
+            Updated: {dateFormatter.format(post.lastUpdate)}
+          </Typography>
+        </Box>
       </Card>
     </Grid>
   );
