@@ -37,6 +37,7 @@ interface PostContextValue {
   getPosts: () => void;
   updatePost: (updatedBody: { title: string; content: string }) => void;
   addPost: (newPost: { title: string; content: string }) => void;
+  deletePost: (id: number) => void;
 }
 
 interface PostState {
@@ -105,21 +106,25 @@ function PostProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { posts, currentPost, isLoading, searchQuery } = state;
 
-  const getPostById = (id: number) =>
-    posts.find((post: Post) => post.id === id);
+  const getPosts = useCallback(
+    async function () {
+      try {
+        dispatch({ type: 'SET_LOADING', payload: true });
+        const res = await axiosPrivate.get('/posts', {
+          headers: { authorization: `Bearer ${userCredentials?.accessToken}` },
+        });
 
-  const getPosts = useCallback(async () => {
-    try {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      const res = await axiosPrivate.get('/posts', {
-        headers: { authorization: `Bearer ${userCredentials?.accessToken}` },
-      });
+        dispatch({ type: 'SET_POSTS', payload: res.data });
+      } finally {
+        dispatch({ type: 'SET_LOADING', payload: false });
+      }
+    },
+    [userCredentials]
+  );
 
-      dispatch({ type: 'SET_POSTS', payload: res.data });
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
-    }
-  }, [userCredentials]);
+  function getPostById(id: number) {
+    return posts.find((post: Post) => post.id === id);
+  }
 
   async function updatePost(updatedBody: { title: string; content: string }) {
     try {
@@ -163,6 +168,18 @@ function PostProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  async function deletePost(id: number) {
+    try {
+      if (!userCredentials) throw new Error('User not authenticated');
+
+      await axiosPrivate.delete(`/posts/${id}`, {
+        headers: { authorization: `Bearer ${userCredentials.accessToken}` },
+      });
+    } catch {
+      console.error('Error deleting post');
+    }
+  }
+
   return (
     <PostContext.Provider
       value={{
@@ -175,6 +192,7 @@ function PostProvider({ children }: { children: React.ReactNode }) {
         getPosts,
         updatePost,
         addPost,
+        deletePost,
       }}
     >
       {children}

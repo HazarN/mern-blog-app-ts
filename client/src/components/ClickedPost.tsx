@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { Box, Button, Card, Container, Typography } from '@mui/material';
 
 import { usePostContext } from '../hooks/usePostContext';
@@ -16,14 +17,17 @@ const buttonContainer = {
 };
 
 function CLickedPost(): JSX.Element {
+  const navigate = useNavigate();
   const { userCredentials } = useAuthContext();
-  const { currentPost } = usePostContext(); // Assume updatePost is a function to update the post
+  const { currentPost, deletePost } = usePostContext(); // Assume updatePost is a function to update the post
   const { handleOpenEditModal } = useModalContext();
 
-  const handleDeletePost = () => {
-    // Logic for deleting the post
-    console.log('Post deleted');
-  };
+  function handleDeletePost() {
+    if (currentPost) {
+      deletePost(currentPost.id);
+      navigate(-1);
+    }
+  }
 
   return (
     <Container>

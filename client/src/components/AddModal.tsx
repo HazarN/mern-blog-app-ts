@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -18,6 +19,11 @@ function AddModal(): JSX.Element {
     handleCloseAddModal,
     handleAddPost,
   } = useModalContext();
+
+  useEffect(() => {
+    dispatch({ type: 'EDIT_TITLE', payload: '' });
+    dispatch({ type: 'EDIT_CONTENT', payload: '' });
+  }, [dispatch]);
 
   return (
     <Dialog open={isAddModalOpen} onClose={handleCloseAddModal}>
