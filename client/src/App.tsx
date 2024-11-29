@@ -30,7 +30,9 @@ function App(): JSX.Element {
               element={
                 <ProtectedRoute>
                   <PostProvider>
-                    <AppLayout />
+                    <ModalProvider>
+                      <AppLayout />
+                    </ModalProvider>
                   </PostProvider>
                 </ProtectedRoute>
               }

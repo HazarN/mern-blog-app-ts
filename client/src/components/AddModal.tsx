@@ -9,19 +9,19 @@ import {
 
 import { useModalContext } from '../hooks/useModalContext';
 
-function EditModal(): JSX.Element {
+function AddModal(): JSX.Element {
   const {
-    isEditModalOpen,
+    isAddModalOpen,
     modalTitle,
     modalContent,
     dispatch,
-    handleCloseEditModal,
-    handleEditPost,
+    handleCloseAddModal,
+    handleAddPost,
   } = useModalContext();
 
   return (
-    <Dialog open={isEditModalOpen} onClose={handleCloseEditModal}>
-      <DialogTitle>Edit Post</DialogTitle>
+    <Dialog open={isAddModalOpen} onClose={handleCloseAddModal}>
+      <DialogTitle>Add Post</DialogTitle>
       <DialogContent>
         <TextField
           label='Title'
@@ -45,19 +45,19 @@ function EditModal(): JSX.Element {
         />
       </DialogContent>
       <DialogActions>
-        <Button variant={'outlined'} onClick={handleCloseEditModal}>
+        <Button variant={'outlined'} onClick={handleCloseAddModal}>
           Cancel
         </Button>
         <Button
           variant='contained'
-          onClick={handleEditPost}
+          onClick={handleAddPost}
           disabled={!modalTitle || !modalContent} // Disable button if fields are empty
         >
-          Save
+          Add
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
 
-export default EditModal;
+export default AddModal;

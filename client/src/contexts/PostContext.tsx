@@ -1,4 +1,4 @@
-import { createContext, useReducer } from 'react';
+import { createContext, useCallback, useReducer } from 'react';
 
 import { axiosPrivate } from '../api/axios';
 
@@ -34,7 +34,9 @@ interface PostContextValue {
 
   dispatch: React.Dispatch<PostAction>;
   getPostById: (id: number) => Post | undefined;
+  getPosts: () => void;
   updatePost: (updatedBody: { title: string; content: string }) => void;
+  addPost: (newPost: { title: string; content: string }) => void;
 }
 
 interface PostState {
@@ -106,6 +108,19 @@ function PostProvider({ children }: { children: React.ReactNode }) {
   const getPostById = (id: number) =>
     posts.find((post: Post) => post.id === id);
 
+  const getPosts = useCallback(async () => {
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      const res = await axiosPrivate.get('/posts', {
+        headers: { authorization: `Bearer ${userCredentials?.accessToken}` },
+      });
+
+      dispatch({ type: 'SET_POSTS', payload: res.data });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  }, [userCredentials]);
+
   async function updatePost(updatedBody: { title: string; content: string }) {
     try {
       if (!userCredentials) throw new Error('User not authenticated');
@@ -134,6 +149,20 @@ function PostProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  async function addPost(newPost: { title: string; content: string }) {
+    try {
+      if (!userCredentials) throw new Error('User not authenticated');
+
+      await axiosPrivate.post('/posts', newPost, {
+        headers: { authorization: `Bearer ${userCredentials.accessToken}` },
+      });
+
+      await getPosts();
+    } catch {
+      console.error('Error adding post');
+    }
+  }
+
   return (
     <PostContext.Provider
       value={{
@@ -143,7 +172,9 @@ function PostProvider({ children }: { children: React.ReactNode }) {
         searchQuery,
         dispatch,
         getPostById,
+        getPosts,
         updatePost,
+        addPost,
       }}
     >
       {children}

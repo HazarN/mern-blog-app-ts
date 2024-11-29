@@ -18,7 +18,7 @@ const buttonContainer = {
 function CLickedPost(): JSX.Element {
   const { userCredentials } = useAuthContext();
   const { currentPost } = usePostContext(); // Assume updatePost is a function to update the post
-  const { handleOpenModal } = useModalContext();
+  const { handleOpenEditModal } = useModalContext();
 
   const handleDeletePost = () => {
     // Logic for deleting the post
@@ -49,7 +49,7 @@ function CLickedPost(): JSX.Element {
       {/* Edit and Delete buttons if the auth-user is the author */}
       {currentPost?.author?.id === userCredentials?.id && (
         <Box sx={buttonContainer}>
-          <Button variant='contained' onClick={handleOpenModal}>
+          <Button variant='contained' onClick={handleOpenEditModal}>
             Edit
           </Button>
           <Button variant='contained' onClick={handleDeletePost}>

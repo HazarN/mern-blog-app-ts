@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Grid } from '@mui/material';
+import { Container, Grid, Button } from '@mui/material';
 
 import { Post } from '../contexts/PostContext';
 
 import { usePostContext } from '../hooks/usePostContext';
-import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
+import { useModalContext } from '../hooks/useModalContext';
 
 import Layout from './Layout';
 
@@ -13,6 +13,7 @@ import Navbar from '../components/Navbar';
 import Spinner from '../components/Spinner';
 import PostCard from '../components/PostCard';
 import UserIcon from '../components/UserIcon';
+import AddModal from '../components/AddModal';
 import SearchBar from '../components/SearchBar';
 
 function search(query: string, posts: Post[]): Post[] {
@@ -26,9 +27,9 @@ function search(query: string, posts: Post[]): Post[] {
 function AppLayout(): JSX.Element {
   const navigate = useNavigate();
 
-  const { posts, isLoading, searchQuery, dispatch, getPostById } =
+  const { posts, isLoading, searchQuery, dispatch, getPostById, getPosts } =
     usePostContext();
-  const axiosPrivate = useAxiosPrivate();
+  const { handleOpenAddModal } = useModalContext();
 
   const searchedPosts = search(searchQuery, posts);
 
@@ -44,25 +45,8 @@ function AppLayout(): JSX.Element {
   }
 
   useEffect(() => {
-    const controller = new AbortController();
-
-    async function getPosts() {
-      try {
-        dispatch({ type: 'SET_LOADING', payload: true });
-        const res = await axiosPrivate.get('/posts', {
-          signal: controller.signal,
-        });
-
-        dispatch({ type: 'SET_POSTS', payload: res.data });
-      } finally {
-        dispatch({ type: 'SET_LOADING', payload: false });
-      }
-    }
-
     getPosts();
-
-    return () => controller.abort();
-  }, [axiosPrivate, dispatch]);
+  }, [getPosts]);
 
   return (
     <Layout excludeFooter={true}>
@@ -70,6 +54,21 @@ function AppLayout(): JSX.Element {
         <UserIcon />
         <SearchBar />
       </Navbar>
+
+      <Container
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
+        <Button
+          sx={{ margin: '1rem 1rem  0 0' }}
+          variant='contained'
+          onClick={handleOpenAddModal}
+        >
+          Add Post
+        </Button>
+      </Container>
 
       {isLoading ? (
         <Container>
@@ -88,6 +87,8 @@ function AppLayout(): JSX.Element {
           </Grid>
         </Container>
       )}
+
+      <AddModal />
     </Layout>
   );
 }
